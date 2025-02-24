@@ -17,7 +17,6 @@
       <a href="#-contributing" style="text-decoration: none; color: #2d3748; font-weight: 500;">Contributing</a>
       <span style="color: #cbd5e0;">•</span>
       <a href="#-citation" style="text-decoration: none; color: #2d3748; font-weight: 500;">Citation</a>
-      <span style="color: #cbd5e0;">•</span>
    </div>
    </div>
 </div>
