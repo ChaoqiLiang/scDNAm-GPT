@@ -263,23 +263,14 @@ Contributions are welcome!
 ## 📖 Citation
 Please cite our paper if you use this code in your work:
 ```
-
 @article{Liang2025.02.19.638959,
-
 author = {Liang, Chaoqi and Ye, Peng and Yan, Hongliang and Zheng, Peng and Sun, Jianle and Wang, Yanni and Li, Yu and Ren, Yuchen and Jiang, Yuanpei and Xiang, Junjia and Zhang, Sizhe and Jiang, Linle and Bai, Weiqiang and Ma, Xinzhu and Chen, Tao and Zuo, Wangmeng and Bai, Lei and Ouyang, Wanli and Li, Jia},
-
 title = {scWGBS-GPT: A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis},
-
 year = {2025},
-
 doi = {10.1101/2025.02.19.638959},
-
 publisher = {Cold Spring Harbor Laboratory},
-
 URL = {https://www.biorxiv.org/content/early/2025/02/23/2025.02.19.638959},
-
 journal = {bioRxiv}
-
 }
 
 ```
