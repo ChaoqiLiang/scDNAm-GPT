@@ -269,8 +269,6 @@ title = {scWGBS-GPT: A Foundation Model for Capturing Long-Range CpG Dependencie
 year = {2025},
 doi = {10.1101/2025.02.19.638959},
 publisher = {Cold Spring Harbor Laboratory},
-URL = {https://www.biorxiv.org/content/early/2025/02/23/2025.02.19.638959},
-journal = {bioRxiv}
-}
+URL = {https://www.biorxiv.org/content/early/2025/02/23/2025.02.19.638959}, journal = {bioRxiv}}
 
 ```
