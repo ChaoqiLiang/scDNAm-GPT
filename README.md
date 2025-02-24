@@ -69,8 +69,8 @@ The high prediction accuracy across most cell types further demonstrates the str
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/ChaoqiLiang/scWGBS-GPT-private-.git
-cd scWGBS-GPT-private-
+git clone https://github.com/ChaoqiLiang/scWGBS-GPT.git
+cd scWGBS-GPT
 ```
 
 ### 2. Requirements
