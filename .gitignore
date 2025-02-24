@@ -1,0 +1,57 @@
+# Ignore Python cache files and folders
+__pycache__/
+*.py[cod]
+
+# Ignore other common Python-related files
+*.pyo
+*.pyd
+# *.png
+*.xlsx
+
+# Ignore model checkpoints and data_list files (optional, adjust as needed)
+process.ipynb
+*.csv
+*.ckpt
+*.pt
+*.h5
+*.log
+*.tar.gz
+pretraining_checkpoints/
+pretraining_logs/
+pretraining/pretraining_checkpoints/
+pretraining/pretraining_logs/
+output_dir/
+logs/
+events.*
+checkpoint-*/
+finetuning/mouse_brain_type_try_16heads/
+finetuning/mouse_brain_type_try_new_attention_mechanism/
+finetuning/finetuning_logs/
+data/marrow
+data/pretrained_data
+model_cekp
+npy_file_info.py
+npy_file_info.sh
+data/disease
+triton_cache
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+=1.4.0
+
+# Ignore environment and dependency files (adjust as needed)
+.env
+.venv
+
+# Ignore by-products of builds
+build/
+dist/
+*.egg-info/
+
+# Ignore IDE files (adjust based on your IDE)
+.vscode/
+.idea/
+
+# Ignore .out files
+*.out

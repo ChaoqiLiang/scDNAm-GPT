@@ -1,0 +1,56 @@
+{
+    "pretrained_model_path": "/home/bingxing2/ailab/scx6mh7/liangchaoqi/output_dir/854194cells_6mer/checkpoint-500000",
+    "type_json_path": "data/finetuning_data_csv/colorectal_cancer_type/colorectal_cancer_type.json",
+    "train_root_path": "/home/bingxing2/ailab/group/ai4bio/public/scWGBS/data/human/GSE_data-human_processed/npy_only_CG_AND_MG_zhenglian_scWGBS_10mer_tokens_for_class/disease",
+    "test_root_path": "/home/bingxing2/ailab/group/ai4bio/public/scWGBS/data/human/GSE_data-human_processed/npy_only_CG_AND_MG_zhenglian_scWGBS_10mer_tokens_for_class/disease",
+    "val_root_path": "/home/bingxing2/ailab/group/ai4bio/public/scWGBS/data/human/GSE_data-human_processed/npy_only_CG_AND_MG_zhenglian_scWGBS_10mer_tokens_for_class/disease",
+    "train_csv_file": "data/finetuning_data_csv/colorectal_cancer_type/colorectal_cancer_type_train_set.csv",
+    "test_csv_file": "data/finetuning_data_csv/colorectal_cancer_type/colorectal_cancer_type_test_set.csv",
+    "val_csv_file": "data/finetuning_data_csv/colorectal_cancer_type/colorectal_cancer_type_test_set.csv",
+    "max_length": 5500000,
+    "train_random_truncation": true,
+    "test_random_truncation": false,
+    "val_random_truncation": false,
+    "attention_mechanism": {
+    "projection_dim": 256,
+    "attention_num_heads": 16,
+    "dropout_rate": 0.1
+    },
+    "training_args": {
+      "overwrite_output_dir": true,
+      "max_steps": 10000,
+      "per_device_train_batch_size": 1,
+      "per_device_eval_batch_size": 1,
+      "gradient_accumulation_steps": 4,
+      "eval_strategy": "steps",
+      "save_steps": 500,
+      "logging_steps": 50,
+      "eval_steps": 500,
+      "fp16": true,
+      "dataloader_num_workers": 0,
+      "report_to": "tensorboard",
+      "ddp_find_unused_parameters": true,
+      "learning_rate": 1e-3,
+      "lr_scheduler_type": "linear",
+      "warmup_steps": 100,
+      "metric_for_best_model": "accuracy",
+      "dataloader_pin_memory": false,
+      "save_safetensors": true,
+      "load_best_model_at_end": true,
+      "max_grad_norm": 10.0,
+      "deepspeed": "config/finetuning/colorectal_cancer_type/deepspeed_config_fp16.json",
+      "output_dir": "output_dir/finetuning/finetuning_checkpoints/colorectal_cancer/lora_from_pretraining",
+      "logging_dir": "output_dir/finetuning/finetuning_logs/colorectal_cancer/lora_from_pretraining"
+  },
+  "lora_config": {
+    "r": 4,
+    "lora_alpha": 4,
+    "lora_dropout": 0.05,
+    "bias": "none",
+    "task_type": "SEQ_CLS",
+    "target_modules": ["x_proj", "out_proj", "in_proj", "dt_proj"],
+    "modules_to_save": ["attention", "classify"],
+    "inference_mode": false
+  }
+  }
+  
