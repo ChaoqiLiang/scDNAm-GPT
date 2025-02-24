@@ -26,7 +26,7 @@
 🧬 **Analyzing Single-Cell Methylation Data** | 🌐 **Whole-Genome-Scale Context Modeling** | 🔬 **Single-CpG Resolution** | ⚡ **Mamba-Powered Speed**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9](https://img.shields.io/badge/Python-3.9-blue.svg)]()
+[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)]()
 [![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white)](https://pytorch.org)
 
 ---
@@ -75,7 +75,7 @@ cd scWGBS-GPT
 
 ### 2. Requirements
 
-- Python 3.9
+- Python 3.10
 - Required libraries:
   - `torch`
   - `mamba`
@@ -93,6 +93,7 @@ To install these dependencies, you can run:
 conda create -n scWGBS_GPT python=3.10 -y
 conda activate scWGBS_GPT
 pip install -r requirements.txt
+pip install causal-conv1d==1.4.0  mamba-ssm==2.2.2
 ```
 
 ### 3. Fine-Tuning for Colorectal Cancer Type Classification
