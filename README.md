@@ -153,7 +153,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 
 | Chromosome | Start Position | Strand | CpG Sequence | Methylated Reads | Total Reads |
 |------------|----------------|--------|--------------|------------------|-------------|
-| chr1       | 10000          | +      | CGA          | 5                | 10          |
+| chr1       | 10000          | +      | ATGCGAA      | 5                | 10          |
 
 - For strand-specific data (`-` strand), you may need to shift the position or reverse complement the CpG sequence.
 
