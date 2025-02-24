@@ -120,17 +120,17 @@ The following configuration files are key for fine-tuning:
 sbatch script/finetuning/finetuning_colorectal_cancer_type.sh
 ```
 
-### 4. Finetuning on Your Owner Data (scWGBS 10-mer Tokenizer and Processing Pipeline)
+### 4. Finetuning on Your Owner Data (scWGBS 6-mer Tokenizer and Processing Pipeline)
 
-This repository provides a Python-based pipeline to process single-cell whole-genome bisulfite sequencing (scWGBS) data from `.tsv.gz` files. It extracts 10-mer nucleotide sequences around CpG sites, tokenizes them with a custom tokenizer, and outputs methylation ratios, positions, and chromosome identifiers.
+This repository provides a Python-based pipeline to process single-cell whole-genome bisulfite sequencing (scWGBS) data from `.tsv.gz` files. It extracts 6-mer nucleotide sequences around CpG sites, tokenizes them with a custom tokenizer, and outputs methylation ratios, positions, and chromosome identifiers.
 
 #### What does this pipeline do?
 
 1. **Searches for `.tsv.gz` files** in a specified directory (and its subdirectories).  
 2. **Reads each `.tsv.gz` file** in chunks.  
-3. **Extracts the 10-mer** around each CpG site.  
+3. **Extracts the 6-mer** around each CpG site.  
 4. **Performs reverse-complement** for negative-strand reads.  
-5. **Uses a custom tokenizer** (e.g., `scWGBS 10-mer tokenizer`) to convert the 10-mer sequence into integer token IDs.  
+5. **Uses a custom tokenizer** (e.g., `scWGBS 6-mer tokenizer`) to convert the 6-mer sequence into integer token IDs.  
 6. **Calculates methylation ratios** by merging coverage at the same positions (summing total reads and methylated reads).  
 7. **Saves the token IDs**, methylation ratios, genomic positions, and chromosome identifiers in compressed `.npz` files.
 
@@ -138,7 +138,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 
 #### Features
 - Processes `.tsv.gz` files containing scWGBS data.
-- Extracts and tokenizes 10-mer sequences surrounding CpG sites.
+- Extracts and tokenizes 6-mer sequences surrounding CpG sites.
 - Computes methylation ratios and saves them in `.npz` files.
 - Handles multiple chromosomes and large datasets using parallel processing.
 - Efficient memory management by processing data in chunks.
@@ -157,7 +157,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 
 - For strand-specific data (`-` strand), you may need to shift the position or reverse complement the CpG sequence.
 
-- **Strand `-`** implies you might shift or reverse complement when extracting the 10-mer.  
+- **Strand `-`** implies you might shift or reverse complement when extracting the 6-mer.  
 
 - **Chromosome List**: By default, the script includes `["chrM", "chrX", "chrY", "chr1", ..., "chr23"]`. Adjust this list as needed for your organism or reference genome.
 
@@ -183,7 +183,7 @@ python data/process_scwgbs.py \
 For each `.tsv.gz` file found, the script will generate four `.npz` files in new subdirectories (parallel to the directory containing the input file):
 
 1. **`....npz`** (e.g., `sample1.npz`):  
-   - Contains the array of token IDs for each 10-mer around valid CpG sites.
+   - Contains the array of token IDs for each 6-mer around valid CpG sites.
 
 2. **`..._ratios.npz`** (e.g., `sample1_ratios.npz`):  
    - Contains the methylation ratios (methylated_reads / total_reads) per position.
