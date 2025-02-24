@@ -166,7 +166,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 ```bash
 python data/process_scwgbs.py \
     --base_dir /path/to/scWGBS/data/your_tsv_path \
-    --tokenizer_dir src/tokenizers/scwgbs_10mer \
+    --tokenizer_dir src/tokenizers/scwgbs_6mer \
     --chromosomes chrM chrX chrY chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 \
     --chunk_size 10000 \
     --max_workers 16
@@ -207,22 +207,22 @@ Directory structure example:
 │   ├── sample2.tsv.gz
 │   └── ...
 │
-├── scWGBS_with_nucleotide_change_10mer_tokens_npz/
+├── scWGBS_with_nucleotide_change_6mer_tokens_npz/
 │   └── <some_subdir>/
 │       ├── sample1.npz
 │       ├── sample2.npz
 │       └── ...
-├── scWGBS_with_nucleotide_change_10mer_ratios_npz/
+├── scWGBS_with_nucleotide_change_6mer_ratios_npz/
 │   └── <some_subdir>/
 │       ├── sample1_ratios.npz
 │       ├── sample2_ratios.npz
 │       └── ...
-├── scWGBS_with_nucleotide_change_10mer_positions_npz/
+├── scWGBS_with_nucleotide_change_6mer_positions_npz/
 │   └── <some_subdir>/
 │       ├── sample1_positions.npz
 │       ├── sample2_positions.npz
 │       └── ...
-└── scWGBS_with_nucleotide_change_10mer_chrs_npz/
+└── scWGBS_with_nucleotide_change_6mer_chrs_npz/
     └── <some_subdir>/
         ├── sample1_chrs.npz
         ├── sample2_chrs.npz
