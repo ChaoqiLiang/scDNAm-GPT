@@ -8,8 +8,6 @@
       <span style="color: #cbd5e0;">•</span>
       <a href="#-performance" style="text-decoration: none; color: #2d3748; font-weight: 500;">Performance</a>
       <span style="color: #cbd5e0;">•</span>
-      <a href="#-citation" style="text-decoration: none; color: #2d3748; font-weight: 500;">Citation</a>
-      <span style="color: #cbd5e0;">•</span>
       <a href="#-quick-start" style="text-decoration: none; color: #2d3748; font-weight: 500;">Quick Start</a>
       <span style="color: #cbd5e0;">•</span>
       <a href="#-faq" style="text-decoration: none; color: #2d3748; font-weight: 500;">FAQ</a>
@@ -17,6 +15,8 @@
       <a href="#-license" style="text-decoration: none; color: #2d3748; font-weight: 500;">License</a>
       <span style="color: #cbd5e0;">•</span>
       <a href="#-contributing" style="text-decoration: none; color: #2d3748; font-weight: 500;">Contributing</a>
+      <a href="#-citation" style="text-decoration: none; color: #2d3748; font-weight: 500;">Citation</a>
+      <span style="color: #cbd5e0;">•</span>
    </div>
    </div>
 </div>
@@ -61,30 +61,6 @@ Test accuracy on 15 cell types from human prefrontal cortex:
 *Accuracy = Percentage of correctly predicted cells per type*
 
 The high prediction accuracy across most cell types further demonstrates the strong performance of scWGBS-GPT in **single-cell methylation annotation tasks**.
-
-## 📖 Citation
-Please cite our paper if you use this code in your work:
-```
-
-@article{Liang2025.02.19.638959,
-
-author = {Liang, Chaoqi and Ye, Peng and Yan, Hongliang and Zheng, Peng and Sun, Jianle and Wang, Yanni and Li, Yu and Ren, Yuchen and Jiang, Yuanpei and Xiang, Junjia and Zhang, Sizhe and Jiang, Linle and Bai, Weiqiang and Ma, Xinzhu and Chen, Tao and Zuo, Wangmeng and Bai, Lei and Ouyang, Wanli and Li, Jia},
-
-title = {scWGBS-GPT: A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis},
-
-year = {2025},
-
-doi = {10.1101/2025.02.19.638959},
-
-publisher = {Cold Spring Harbor Laboratory},
-
-URL = {https://www.biorxiv.org/content/early/2025/02/23/2025.02.19.638959},
-
-journal = {bioRxiv}
-
-}
-
-```
 
 ## 🚀 Quick Start
 
@@ -283,3 +259,27 @@ This project is licensed under the [MIT License](LICENSE). Please see the `LICEN
 Contributions are welcome!  
 - **Issues**: If you find a bug or have a feature request, open a [GitHub Issue](../../issues).  
 - **Pull Requests**: Fork the repo, make changes, and create a PR.
+
+## 📖 Citation
+Please cite our paper if you use this code in your work:
+```
+
+@article{Liang2025.02.19.638959,
+
+author = {Liang, Chaoqi and Ye, Peng and Yan, Hongliang and Zheng, Peng and Sun, Jianle and Wang, Yanni and Li, Yu and Ren, Yuchen and Jiang, Yuanpei and Xiang, Junjia and Zhang, Sizhe and Jiang, Linle and Bai, Weiqiang and Ma, Xinzhu and Chen, Tao and Zuo, Wangmeng and Bai, Lei and Ouyang, Wanli and Li, Jia},
+
+title = {scWGBS-GPT: A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis},
+
+year = {2025},
+
+doi = {10.1101/2025.02.19.638959},
+
+publisher = {Cold Spring Harbor Laboratory},
+
+URL = {https://www.biorxiv.org/content/early/2025/02/23/2025.02.19.638959},
+
+journal = {bioRxiv}
+
+}
+
+```
