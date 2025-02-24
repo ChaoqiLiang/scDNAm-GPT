@@ -8,6 +8,7 @@ __pycache__/
 # *.png
 *.xlsx
 
+
 # Ignore model checkpoints and data_list files (optional, adjust as needed)
 process.ipynb
 *.csv
