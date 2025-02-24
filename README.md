@@ -166,7 +166,6 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 ```bash
 python data/process_scwgbs.py \
     --base_dir /path/to/scWGBS/data/your_tsv_path \
-    --reference_fasta data/ref_gene/mm10.fa \
     --tokenizer_dir src/tokenizers/scwgbs_10mer \
     --chromosomes chrM chrX chrY chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 \
     --chunk_size 10000 \
@@ -174,7 +173,6 @@ python data/process_scwgbs.py \
 ```
 
 1. **`--base_dir`** is where the script will look for `.tsv.gz` files.  
-2. **`--reference_fasta`** is the genome FASTA file (mm10 in this example).  
 3. **`--tokenizer_dir`** points to the custom tokenizer folder (which has `config.json` and `tokenizer.json`).  
 4. **`--chromosomes`** example: only process `chrM, chrX, chrY, chr1, chr2, chr3` for testing.  
 5. **`--chunk_size`** is 10000 lines at a time. Adjust for memory usage.  
