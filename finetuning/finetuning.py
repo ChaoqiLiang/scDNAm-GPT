@@ -32,7 +32,7 @@ import numpy as np
 import torch.nn.functional as F
 from transformers import TrainingArguments, AutoTokenizer
 from transformers import Trainer as scWGBSTrainer
-from src.model.scwgbs_gpt import scWGBSGPTForSequenceClassification, scWGBSGPTForSequenceClassificationWithBatchCorrection
+from src.model.scwgbs_gpt import scWGBSGPTForSequenceClassification
 from src.dataset.scwgbs_dataset import TokensRatiosDataset, scWGBS_collate_TokensRatios
 from sklearn import metrics
 from safetensors.torch import load_file as safetensors_load
@@ -271,13 +271,12 @@ def main():
     data_collator = scWGBS_collate_TokensRatios(tokenizer=tokenizer)
 
     # Initialize model
-    Classifier = scWGBSGPTForSequenceClassificationWithBatchCorrection if training_args_dict.get("need_batch", False) else scWGBSGPTForSequenceClassification
+    Classifier = scWGBSGPTForSequenceClassification
     model = Classifier.from_pretrained(
         tokenizer=tokenizer,
         pretrained_model_name=training_args_dict["pretrained_model_path"],
         num_labels=train_dataset.num_labels,  # Assuming celltype is the label column
         attention_mechanism=training_args_dict["attention_mechanism"],
-        batch_correction=training_args_dict.get("need_batch", False),
         lambd=training_args_dict.get("lambd", 1.0),
         num_batches=train_dataset.num_batches
     )
