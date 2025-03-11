@@ -86,7 +86,7 @@ pip install causal-conv1d==1.4.0  mamba-ssm==2.2.2
 
 ### 3. Fine-Tuning for Colorectal Cancer Type Classification
 
-This repository provides a framework for fine-tuning the scWGBS-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scWGBS-GPT model. The model leverages transformer-based architectures with specialized attention mechanisms for sequence classification tasks.
+This repository provides a framework for fine-tuning the scWGBS-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scWGBS-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks.
 
 #### Required Files
 The fine-tuning dataset should be prepared with the following files:
