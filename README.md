@@ -75,24 +75,13 @@ cd scWGBS-GPT
 
 ### 2. Requirements
 
-- Python 3.10
-- Required libraries:
-  - `torch`
-  - `mamba`
-  - `numpy`
-  - `pandas`
-  - `tqdm`
-  - `pyfaidx`
-  - `transformers`
-  - `argparse`
-  - `concurrent.futures`
-
 To install these dependencies, you can run:
 
 ```bash
 conda create -n scWGBS_GPT python=3.10 -y
 conda activate scWGBS_GPT
 pip install -r requirements.txt
+pip install causal-conv1d==1.4.0  mamba-ssm==2.2.2
 ```
 
 ### 3. Fine-Tuning for Colorectal Cancer Type Classification
