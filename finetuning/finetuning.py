@@ -351,14 +351,14 @@ def main():
     if is_main_process():
         eval_results_path = os.path.join(training_args_dict["training_args"]["logging_dir"], "eval_results.json")
         with open(eval_results_path, "w") as f:
-            json.dump(eval_results, f)
+            json.dump(eval_results, f, indent=4)
         print("Validation results:", eval_results)
 
     test_results = trainer.evaluate(test_dataset)
     if is_main_process():
         test_results_path = os.path.join(training_args_dict["training_args"]["logging_dir"], "test_results.json")
         with open(test_results_path, "w") as f:
-            json.dump(test_results, f)
+            json.dump(test_results, f, indent=4)
         print("Test results:", test_results)
 
 

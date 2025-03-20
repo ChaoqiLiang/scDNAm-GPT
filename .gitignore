@@ -1,3 +1,12 @@
+data/deconv_2_partial/
+data/disease/
+output_dir/
+tmp/
+slurm-*.out
+*.zip
+*.tar
+*.gz
+
 # Ignore Python cache files and folders
 __pycache__/
 *.py[cod]
