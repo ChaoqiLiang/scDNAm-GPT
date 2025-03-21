@@ -1,6 +1,6 @@
 {
     "pretrained_model_path": "output_dir/pretraining/pretraining_checkpoints/new_data_npz_with_marrow_no_use_dataug_8mambalayers_60k/checkpoint-50000",
-    "type_json_path": "/home/bingxing2/ailab/scxlab0179/scWGBS-GPT-2/finetuning/finetuning_data_list/colorectal_cancer_type/colorectal_cancer_type.json",
+    "type_json_path": "data/finetuning_data_csv/deconv_2_partial/deconv_2_partial.json",
     "train_root_path": "data/deconv_2_partial/npy_only_CG_AND_MG_zhenglian_scWGBS_8mer_tokens/bedfile",
     "test_root_path": "data/deconv_2_partial/npy_only_CG_AND_MG_zhenglian_scWGBS_8mer_tokens/bedfile",
     "val_root_path": "data/deconv_2_partial/npy_only_CG_AND_MG_zhenglian_scWGBS_8mer_tokens/bedfile",
