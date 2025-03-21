@@ -109,7 +109,24 @@ The following configuration files are key for fine-tuning:
 sbatch script/finetuning/finetuning_colorectal_cancer_type.sh
 ```
 
-### 4. Finetuning on Your Owner Data (scWGBS 6-mer Tokenizer and Processing Pipeline)
+### 4. Fine-Tuning for Deconvolution
+
+#### Required Files
+The fine-tuning dataset should be prepared with the following files:
+
+You can download the required dataset (deconv_2_partial.zip) from [Google Drive](https://drive.google.com/drive/folders/1PEAdRngaonY4TMEEX4tGO-zF7nqRuN52) and save it to the `data/`. The whole dataset was synthesized to 12TB. So, we only provide several examples to make sure the training has been ready to start. This will ensure that all necessary data files and model checkpoint are available for fine-tuning.
+
+#### Configuration:
+The following configuration files are key for fine-tuning:
+- **`config/finetuning/deconv_5type/training_args_fp16.json`**: Contains training hyperparameters such as batch size, learning rate, and model paths.
+- **`config/finetuning/deconv_5type/deepspeed_config_fp16.json`**: Optimizes training for large models using **DeepSpeed**.
+
+#### Submit the SLURM job with:
+```bash
+sbatch script/finetuning/finetuning_deconv_5type.sh
+```
+
+### 5. Finetuning on Your Owner Data (scWGBS 6-mer Tokenizer and Processing Pipeline)
 
 This repository provides a Python-based pipeline to process single-cell whole-genome bisulfite sequencing (scWGBS) data from `.tsv.gz` files. It extracts 6-mer nucleotide sequences around CpG sites, tokenizes them with a custom tokenizer, and outputs methylation ratios, positions, and chromosome identifiers.
 
