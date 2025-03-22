@@ -252,7 +252,11 @@ Directory structure example:
    - Modify the chromosome list using `--chromosomes`.  
 
 5. **Can I use this for single-end or paired-end data?**  
-   - The script only depends on the `.tsv.gz` format (`chrom, pos, strand, seq, methylated, total`). It does not differentiate single-end vs. paired-end.  
+   - The script only depends on the `.tsv.gz` format (`chrom, pos, strand, seq, methylated, total`). It does not differentiate single-end vs. paired-end.
+
+6. **Why do I get an error when using a batch size greater than 1?**  
+   - An improper transpose operation in the `forward` function caused an error to occur if the batch size was set to more than 1.  
+   - This issue has now been fixed.
 
 ## 📜 License
 
