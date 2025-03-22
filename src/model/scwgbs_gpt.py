@@ -420,7 +420,7 @@ class scWGBSGPTForSequenceClassification(scWGBSGPTLMHeadModelwithLoss):
             v_proj = hidden_states
 
         attn_output, _ = self.attention(q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
-        attn_output = attn_output.transpose(0, 1).squeeze(1)
+        attn_output = attn_output.squeeze(1)
 
 
         norm_attn_outputs = self.norm(attn_output)
@@ -508,12 +508,12 @@ class scWGBSGPTForSequenceClassificationWithBatchCorrection(scWGBSGPTForSequence
             v_proj = hidden_states
 
         attn_output, _ = self.attention(q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
-        attn_output = attn_output.transpose(0, 1).squeeze(1)
+        attn_output = attn_output.squeeze(1)
 
         batch_attn_output, _ = self.batch_attention(
             batch_q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask
         )
-        batch_attn_output = batch_attn_output.transpose(0, 1).squeeze(1)
+        batch_attn_output = batch_attn_output.squeeze(1)
         norm_batch_attn_outputs = self.batch_norm(batch_attn_output)
         batch_logits = self.batch_classify(norm_batch_attn_outputs)
 
