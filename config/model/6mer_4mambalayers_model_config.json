@@ -31,7 +31,6 @@
       "attn_layer_idx": [],
       "attn_cfg": {},
       "tie_embeddings": true
-        
     }
   }
   
