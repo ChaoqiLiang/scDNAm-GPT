@@ -1,0 +1,36 @@
+{
+    "tokenizer_name": "src/tokenizers/scwgbs_6mer",
+    "model_config": {
+      "K_mer": "6mer",
+      "d_model": 64,
+      "n_layer": 4,
+      "vocab_size": 520,
+      "ssm_cfg": {
+        "d_state": 16,
+        "d_conv": 4,
+        "expand": 2,
+        "dt_rank": "auto",
+        "dt_min": 0.001,
+        "dt_max": 0.1,
+        "dt_init": "random",
+        "dt_scale": 1.0,
+        "dt_init_floor": 0.0001,
+        "conv_bias": true,
+        "bias": false,
+        "use_fast_path": true
+      },
+      "initializer_cfg": {
+        "initializer_range": 0.02,
+        "rescale_prenorm_residual": true
+      },
+      "rms_norm": true,
+      "residual_in_fp32": false,
+      "fused_add_norm": true,
+      "pad_vocab_size_multiple": 8,
+      "d_intermediate": 0,
+      "attn_layer_idx": [],
+      "attn_cfg": {},
+      "tie_embeddings": true
+    }
+  }
+  
