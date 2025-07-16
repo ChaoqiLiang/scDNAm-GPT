@@ -1,9 +1,10 @@
 <div align="center" style="margin: 0; padding: 0;">
-  <h1 style="margin: 0; padding: 0;">🐍 scWGBS-GPT</h1>
+  <h1 style="margin: 0; padding: 0;">🧬 scDNAm-GPT</h1>
+  <p style="margin-top: 0; font-size: 0.95rem; color: #555;">(formerly known internally as <code>scWGBS-GPT</code>)</p>
   <img src="pic/scWGBS-GPT.png" width="240" style="display: block; margin: 0 auto;"/>
   <p>A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis</p>
-   <div align="center" style="margin: 1.5rem 0;">
-   <div style="display: flex; gap: 1.25rem; justify-content: center;">
+  <div align="center" style="margin: 1.5rem 0;">
+    <div style="display: flex; gap: 1.25rem; justify-content: center;">
       <a href="#-key-features" style="text-decoration: none; color: #2d3748; font-weight: 500;">Key Features</a>
       <span style="color: #cbd5e0;">•</span>
       <a href="#-performance" style="text-decoration: none; color: #2d3748; font-weight: 500;">Performance</a>
@@ -17,9 +18,10 @@
       <a href="#-contributing" style="text-decoration: none; color: #2d3748; font-weight: 500;">Contributing</a>
       <span style="color: #cbd5e0;">•</span>
       <a href="#-citation" style="text-decoration: none; color: #2d3748; font-weight: 500;">Citation</a>
-   </div>
-   </div>
+    </div>
+  </div>
 </div>
+
 
 
 ## 🌟 Highlights
