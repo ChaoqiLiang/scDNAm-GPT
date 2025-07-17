@@ -34,7 +34,7 @@
 ## 🔥 Key Features
 
 - **🧬 Analyzing Single-Cell Methylation Data**: The first language model for analyzing single-cell methylation data, offering unparalleled accuracy and scalability.
-- **🌐 Whole-Genome-Scale Processing**: Handles sequences with **up to 2 million CpG sites** - 100× longer than conventional methods
+- **🌐 Whole-Genome-Scale Processing**: Handles sequences with **up to 10 million CpG sites** - 500× longer than conventional methods
 - **🔬 Single-CpG Resolution**: Captures methylation patterns at individual CpG level with 93.4% average cell type classification accuracy
 - **⚡ Mamba-Powered Efficiency**: Combines selective state space models with cross-attention for **200× faster inference** vs standard transformers
 - **🧩 Modular Design**: Easily adaptable for diverse epigenomic analysis tasks including:
