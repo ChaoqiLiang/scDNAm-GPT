@@ -1,8 +1,21 @@
 <div align="center" style="margin: 0; padding: 0;">
   <h1 style="margin: 0; padding: 0;">🧬 scDNAm-GPT</h1>
-  <p style="margin-top: 0; font-size: 0.95rem; color: #555;">(formerly known internally as <code>scWGBS-GPT</code>)</p>
+  <p style="margin-top: 0; font-size: 0.95rem; color: #555;">
+    (formerly known internally as <code>scWGBS-GPT</code>)
+  </p>
   <img src="pic/scWGBS-GPT.png" width="240" style="display: block; margin: 0 auto;"/>
-  <p>A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis</p>
+  <p>
+    A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis
+  </p>
+  <p style="max-width: 720px; margin: 0 auto; font-size: 0.95rem; color: #333;">
+    We have organized a comprehensive benchmark and updated all the main figures 1, 2, 3, 4, and 5 in this revision.
+    The title of the manuscript has been changed, and the model name has been updated from <strong>scWGBS-GPT</strong> to <strong>scDNAm-GPT</strong>.
+  </p>
+  <p>
+    📄 <a href="https://www.biorxiv.org/content/10.1101/2025.02.19.638959v2" target="_blank">
+      Read our paper on bioRxiv
+    </a>
+  </p>
   <div align="center" style="margin: 1.5rem 0;">
     <div style="display: flex; gap: 1.25rem; justify-content: center;">
       <a href="#-key-features" style="text-decoration: none; color: #2d3748; font-weight: 500;">Key Features</a>
@@ -21,7 +34,6 @@
     </div>
   </div>
 </div>
-
 
 
 ## 🌟 Highlights
