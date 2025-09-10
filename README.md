@@ -106,7 +106,7 @@ The fine-tuning dataset should be prepared with the following files:
 - **scWGBS data** in `.npz` format, containing single-cell CpG site information.
 - **CSV files** for training and testing sets, specifying cell metadata and corresponding labels.
 
-You can download the required dataset from [Google Drive](https://drive.google.com/drive/folders/1PEAdRngaonY4TMEEX4tGO-zF7nqRuN52) and save it to the current directory (`./`). This will ensure that all necessary data files and model checkpoint are available for fine-tuning.
+You can download the required dataset from [Google Drive](https://drive.google.com/drive/folders/1PEAdRngaonY4TMEEX4tGO-zF7nqRuN52) and save it to the current directory (`./`). This will ensure that all necessary data files and model checkpoint (That is the 4-layer model, scDNAm-GPT<u>small</u>. The 8-layer model will be release soon.) are available for fine-tuning.
 
 The paths to these files should be specified in the configuration file (`config/finetuning/colorectal_cancer_type/training_args_fp16.json`).
 
