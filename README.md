@@ -60,15 +60,15 @@
 Test accuracy on 15 cell types from human prefrontal cortex:
 
 | Cell Type  | Accuracy | Cell Type | Accuracy |
-|------------|----------|-----------|----------|
-| L2/3-IT    | 98.16%   | L6-CT     | 93.41%   |
-| ODC        | 99.63%   | Foxp2     | 94.85%   |
-| MSN-D1     | 93.39%   | Sncg      | 80.48%   |
-| MSN-D2     | 91.40%   | ASC       | 95.68%   |
-| Vip        | 94.00%   | L6b       | 93.41%   |
-| Sst        | 94.19%   | L5-IT     | 94.60%   |
-| Pvalb      | 92.62%   | Lamp5     | 94.74%   |
-| L6-IT      | 84.32%   |           |          |
+|------------|---------|-----------|----------|
+| L2/3-IT    | 99.1%   | L6-CT     | 97.1%   |
+| ODC        | 99.7%   | Foxp2     | 99.1%   |
+| MSN-D1     | 96.5%   | Sncg      | 88.6%   |
+| MSN-D2     | 95.2%   | ASC       | 97.1%   |
+| Vip        | 96.6%   | L6b       | 95.3%   |
+| Sst        | 95.6%   | L5-IT     | 97.2%   |
+| Pvalb      | 95.3%   | Lamp5     | 94.5%   |
+| L6-IT      | 92.6%   |           |          |
 
 *Accuracy = Percentage of correctly predicted cells per type*
 
