@@ -81,8 +81,8 @@ The high prediction accuracy across most cell types further demonstrates the str
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/ChaoqiLiang/scWGBS-GPT.git
-cd scWGBS-GPT
+git clone https://github.com/ChaoqiLiang/scDNAm-GPT.git
+cd scDNAm_GPT
 ```
 
 ### 2. Requirements
@@ -90,8 +90,8 @@ cd scWGBS-GPT
 To install these dependencies, you can run:
 
 ```bash
-conda create -n scWGBS_GPT python=3.10 -y
-conda activate scWGBS_GPT
+conda create -n scDNAm_GPT python=3.10 -y
+conda activate scDNAm_GPT
 pip install -r requirements.txt
 pip install causal-conv1d==1.4.0  mamba-ssm==2.2.2
 ```
