@@ -5,7 +5,7 @@
   </p>
   <img src="pic/scWGBS-GPT.png" width="240" style="display: block; margin: 0 auto;"/>
   <p>
-    A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis
+    A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing
   </p>
   <p style="max-width: 720px; margin: 0 auto; font-size: 0.95rem; color: #333;">
     We have organized a comprehensive benchmark and updated all the main figures 1, 2, 3, 4, and 5 in this revision.
