@@ -136,7 +136,7 @@ The following configuration files are key for fine-tuning:
 - **`config/finetuning/colorectal_cancer_type/training_args_fp16.json`**: Contains training hyperparameters such as batch size, learning rate, and model paths.
 - **`config/finetuning/colorectal_cancer_type/deepspeed_config_fp16.json`**: Optimizes training for large models using **DeepSpeed**.
 
-#### Submit the SLURM job with:
+#### Submit the job with:
 ```bash
 bash script/finetuning/finetuning_colorectal_cancer_type.sh
 ```
@@ -189,7 +189,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 python data/process_scwgbs.py \
     --base_dir /path/to/scWGBS/data/your_tsv_path \
     --tokenizer_dir src/tokenizers/scwgbs_6mer \
-    --chromosomes chrM chrX chrY chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 \
+    --chromosomes chrM chrX chrY chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 \
     --chunk_size 10000 \
     --max_workers 16
 ```
