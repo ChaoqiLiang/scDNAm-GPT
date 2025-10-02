@@ -1,4 +1,4 @@
-from src.model.scwgbs_mixer_seq_simple import MambaLMHeadModel
+from src.model.scdnam_mixer_seq_simple import MambaLMHeadModel
 from transformers.modeling_outputs import CausalLMOutput
 from typing import Optional
 import sys, torch
@@ -123,7 +123,7 @@ def random_noise(methy_ratios, scale=0.05):
     # Add noise and clamp the result to the range [0, 1]
     return torch.clamp(methy_ratios + noise, min=0.0, max=1.0)
 
-class scWGBSGPTLMHeadModelwithLoss(MambaLMHeadModel):
+class scDNAmGPTLMHeadModelwithLoss(MambaLMHeadModel):
     """
     A Language Model Head with additional support for loss calculations related to methylation.
 
@@ -133,7 +133,7 @@ class scWGBSGPTLMHeadModelwithLoss(MambaLMHeadModel):
         end_token_id: Token ID for the end token (e.g., [SEP]).
     """
     def __init__(self, config, tokenizer, initializer_cfg=None, device=None, dtype=None, use_dataug=False):
-        super(scWGBSGPTLMHeadModelwithLoss, self).__init__(config, initializer_cfg, device, dtype)
+        super(scDNAmGPTLMHeadModelwithLoss, self).__init__(config, initializer_cfg, device, dtype)
 
         self.pad_token_id = tokenizer._convert_token_to_id("[PAD]")
         self.start_token_id = tokenizer._convert_token_to_id("[BOS]")
@@ -182,7 +182,7 @@ class scWGBSGPTLMHeadModelwithLoss(MambaLMHeadModel):
         self.tie_weights()
         return load_result
 
-class scWGBSGPTForSequenceClassification(scWGBSGPTLMHeadModelwithLoss):
+class scDNAmGPTForSequenceClassification(scDNAmGPTLMHeadModelwithLoss):
     """
     A class for sequence classification based on methylation data.
 
@@ -527,7 +527,7 @@ class scWGBSGPTForSequenceClassification(scWGBSGPTLMHeadModelwithLoss):
             }
 
 
-class scWGBSGPTForSequenceClassificationWithBatchCorrection(scWGBSGPTForSequenceClassification):
+class scDNAmGPTForSequenceClassificationWithBatchCorrection(scDNAmGPTForSequenceClassification):
     """
     A class for sequence classification based on methylation data.
 

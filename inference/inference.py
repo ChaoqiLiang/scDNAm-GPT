@@ -11,8 +11,8 @@ import torch
 import numpy as np
 import torch.nn.functional as F
 from transformers import AutoTokenizer
-from src.model.scwgbs_gpt import scWGBSGPTForSequenceClassification
-from src.dataset.scwgbs_dataset import TokensRatiosDataset, scWGBS_collate_TokensRatios
+from src.model.scdnam_gpt import scDNAmGPTForSequenceClassification
+from src.dataset.scdnam_dataset import TokensRatiosDataset, scDNAm_collate_TokensRatios
 from sklearn import metrics
 from src.mambaconfig import MambaConfig
 from mamba_ssm.utils.hf import load_config_hf, load_state_dict_hf
@@ -93,7 +93,7 @@ def masked_mean(hidden_states, attention_mask):
 
     return mean_hidden
 
-class scWGBSGPTForAnalysis(scWGBSGPTForSequenceClassification):
+class scDNAmGPTForAnalysis(scDNAmGPTForSequenceClassification):
     def __init__(
         self,
         config,
@@ -400,9 +400,9 @@ def run_inference_on_dataset(model, dataset, tokenizer, data_collator, device, o
 
 def inference():
     """
-    Function for inference using the scWGBS model.
+    Function for inference using the scDNAm model.
     """
-    parser = argparse.ArgumentParser(description="Run inference with a scWGBS model.")
+    parser = argparse.ArgumentParser(description="Run inference with a scDNAm model.")
     parser.add_argument("--inference_args_path", type=str, required=True, help="Path to the inference arguments JSON file.")
     args = parser.parse_args()
 
@@ -412,7 +412,7 @@ def inference():
 
     # Load tokenizer
     K_mer = model_config_dict["K_mer"]
-    tokenizer = AutoTokenizer.from_pretrained(f"src/tokenizers/scwgbs_{K_mer}", trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(f"src/tokenizers/scdnam_{K_mer}", trust_remote_code=True)
 
     datasets = {}
 
@@ -468,7 +468,7 @@ def inference():
             selective_chrs=inference_args_dict.get("selective_chrs", [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24])
         )
 
-    data_collator = scWGBS_collate_TokensRatios(tokenizer=tokenizer)
+    data_collator = scDNAm_collate_TokensRatios(tokenizer=tokenizer)
     # print(datasets["train"][0])
 
     # Automatically choose the correct split
@@ -491,7 +491,7 @@ def inference():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Initialize model
-    model = scWGBSGPTForAnalysis.from_pretrained(
+    model = scDNAmGPTForAnalysis.from_pretrained(
         tokenizer=tokenizer,
         pretrained_model_name=inference_args_dict["pretrained_model_path"],
         device=device,

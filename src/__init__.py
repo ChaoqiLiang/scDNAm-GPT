@@ -1,3 +1,3 @@
-from src.model.scwgbs_gpt import scWGBSGPTLMHeadModelwithLoss, scWGBSGPTForSequenceClassification
-from src.dataset.scwgbs_dataset import TokensRatiosDataset, scWGBS_collate_TokensRatios
-from src.model.scwgbs_mixer_seq_simple import MambaLMHeadModel
+from src.model.scdnam_gpt import scDNAmGPTLMHeadModelwithLoss, scDNAmGPTForSequenceClassification
+from src.dataset.scdnam_dataset import TokensRatiosDataset, scDNAm_collate_TokensRatios
+from src.model.scdnam_mixer_seq_simple import MambaLMHeadModel

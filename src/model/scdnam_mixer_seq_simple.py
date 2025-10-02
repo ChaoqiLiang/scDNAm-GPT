@@ -116,7 +116,7 @@ def _init_weights(
                     p /= math.sqrt(n_residuals_per_layer * n_layer)
 
 
-# class scWGBSMixerModel(nn.Module):
+# class scDNAmMixerModel(nn.Module):
 #     def __init__(
 #         self,
 #         d_model: int,
@@ -239,7 +239,7 @@ def _init_weights(
 #             return hidden_states
 
 
-class scWGBSMixerModel(nn.Module):
+class scDNAmMixerModel(nn.Module):
     def __init__(
         self,
         d_model: int,
@@ -385,7 +385,7 @@ class MambaLMHeadModel(nn.Module, GenerationMixin):
         super().__init__()
         if vocab_size % pad_vocab_size_multiple != 0:
             vocab_size += pad_vocab_size_multiple - (vocab_size % pad_vocab_size_multiple)
-        self.backbone = scWGBSMixerModel(
+        self.backbone = scDNAmMixerModel(
             d_model=d_model,
             n_layer=n_layer,
             d_intermediate=d_intermediate,

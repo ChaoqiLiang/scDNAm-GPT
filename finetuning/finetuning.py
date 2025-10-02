@@ -11,9 +11,9 @@ import random
 import numpy as np
 import torch.nn.functional as F
 from transformers import TrainingArguments, AutoTokenizer
-from transformers import Trainer as scWGBSTrainer
-from src.model.scwgbs_gpt import scWGBSGPTForSequenceClassification, scWGBSGPTForSequenceClassificationWithBatchCorrection
-from src.dataset.scwgbs_dataset import TokensRatiosDataset, scWGBS_collate_TokensRatios, TokensRatiosLoadALLDataset
+from transformers import Trainer as scDNAmTrainer
+from src.model.scdnam_gpt import scDNAmGPTForSequenceClassification, scDNAmGPTForSequenceClassificationWithBatchCorrection
+from src.dataset.scdnam_dataset import TokensRatiosDataset, scDNAm_collate_TokensRatios, TokensRatiosLoadALLDataset
 from sklearn import metrics
 from scipy.stats import pearsonr, spearmanr
 from safetensors.torch import load_file as safetensors_load
@@ -255,7 +255,7 @@ def compute_regression_metrics(eval_pred):
 # Main function for finetuning
 def main(training_args_dict):
     """
-    Main function for fine-tuning the scWGBS model.
+    Main function for fine-tuning the scDNAm model.
     """
 
     # Load model configurations
@@ -263,7 +263,7 @@ def main(training_args_dict):
 
     # Load tokenizer
     K_mer = model_config_dict["K_mer"]
-    tokenizer = AutoTokenizer.from_pretrained(f"src/tokenizers/scwgbs_{K_mer}", trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(f"src/tokenizers/scdnam_{K_mer}", trust_remote_code=True)
 
     # Load datasets and data collator
     # K_mer = args.tokenizer_config_path.split("_")[-1]
@@ -309,7 +309,7 @@ def main(training_args_dict):
                                        use_truncation=training_args_dict.get("use_truncation", True), 
                                        start_idx=0, selective_chrs=training_args_dict.get("selective_chrs", None))
     
-    data_collator = scWGBS_collate_TokensRatios(tokenizer=tokenizer)
+    data_collator = scDNAm_collate_TokensRatios(tokenizer=tokenizer)
 
     # If distributed training is being used
     if dist.is_available() and dist.is_initialized():
@@ -319,7 +319,7 @@ def main(training_args_dict):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Initialize model
-    Classifier = scWGBSGPTForSequenceClassificationWithBatchCorrection if training_args_dict.get("need_batch", False) else scWGBSGPTForSequenceClassification
+    Classifier = scDNAmGPTForSequenceClassificationWithBatchCorrection if training_args_dict.get("need_batch", False) else scDNAmGPTForSequenceClassification
 
     train_from_scratch = training_args_dict.get("train_from_scratch", False)
     use_tumor_ratios = training_args_dict.get("use_tumor_ratios", False)
@@ -403,7 +403,7 @@ def main(training_args_dict):
 
     # Initialize trainer
     trainer = initialize_trainer(
-        trainer_class=scWGBSTrainer,
+        trainer_class=scDNAmTrainer,
         model=model,
         tokenizer=tokenizer,
         train_dataset=train_dataset,
@@ -453,7 +453,7 @@ def main(training_args_dict):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Fine-tune a scWGBS model.")
+    parser = argparse.ArgumentParser(description="Fine-tune a scDNAm model.")
     parser.add_argument("--local_rank", type=int, default=0, help="Local rank for distributed training")
     # parser.add_argument("--tokenizer_config_path", type=str, required=True, help="Path to the model configuration JSON file.")
     parser.add_argument("--training_args_path", type=str, required=True, help="Path to the training arguments JSON file.")

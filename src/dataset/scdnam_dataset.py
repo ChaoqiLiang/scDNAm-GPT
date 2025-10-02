@@ -226,7 +226,7 @@ class TokensRatiosDataset(Dataset):
 
 
 @dataclass
-class scWGBS_collate_TokensRatios:
+class scDNAm_collate_TokensRatios:
     """
     A PyTorch collate function for batching tokenized sequences and methylation ratios.
 
