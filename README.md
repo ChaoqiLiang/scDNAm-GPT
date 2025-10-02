@@ -114,11 +114,11 @@ We provide example tutorials in the `tutorials` folder to help you get started:
 - [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/2_pesudo_time.ipynb) – Demo for pseudotime analysis  
 - [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Demo for cfDNA tumor deconvolution  
 
-You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. (The required datasets for these tutorials are uploading. It will be finished **before October 4th**.)
+You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. (The required datasets and models for these tutorials are uploading. It will be finished **before October 4th**.)
 
 ### 4. Fine-Tuning for Colorectal Cancer Type Classification
 
-This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks. (The required datasets for Colorectal Cancer Type Classification are uploading. It will be finished **before October 4th**.)
+This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks. (The required datasets and models for Colorectal Cancer Type Classification are uploading. It will be finished **before October 4th**.)
 
 #### Required Files
 The fine-tuning dataset should be prepared with the following files:
