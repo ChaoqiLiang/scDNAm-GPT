@@ -70,7 +70,7 @@ Test accuracy on 15 cell types from human prefrontal cortex:
 
 *Accuracy = Percentage of correctly predicted cells per type*
 
-The high prediction accuracy across most cell types further demonstrates the strong performance of scWGBS-GPT in **single-cell methylation annotation tasks**.
+The high prediction accuracy across most cell types further demonstrates the strong performance of scDNAm-GPT in **single-cell methylation annotation tasks**.
 
 ## 🚀 Quick Start
 
@@ -118,7 +118,7 @@ You can open these notebooks and follow the step-by-step instructions to reprodu
 
 ### 4. Fine-Tuning for Colorectal Cancer Type Classification
 
-This repository provides a framework for fine-tuning the scWGBS-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scWGBS-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks.
+This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks.
 
 #### Required Files
 The fine-tuning dataset should be prepared with the following files:
