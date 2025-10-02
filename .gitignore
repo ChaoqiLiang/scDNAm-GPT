@@ -1,7 +1,11 @@
-data/deconv_2_partial/
 data/disease/
 output_dir/
 tmp/
+tutorials/output_dir/
+tutorials/human_esc
+data/crc/
+pretrained_model/
+
 slurm-*.out
 *.zip
 *.tar

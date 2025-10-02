@@ -39,8 +39,6 @@
 ## 🌟 Highlights
 🧬 **Analyzing Single-Cell Methylation Data** | 🌐 **Whole-Genome-Scale Context Modeling** | 🔬 **Single-CpG Resolution** | ⚡ **Mamba-Powered Speed**
 
-[![bioRxiv](https://img.shields.io/badge/bioRxiv-Preprint-red)](https://www.biorxiv.org/content/10.1101/2025.02.19.638959v2)
-
 ---
 
 ## 🔥 Key Features
@@ -93,10 +91,32 @@ To install these dependencies, you can run:
 conda create -n scDNAm_GPT python=3.10 -y
 conda activate scDNAm_GPT
 pip install -r requirements.txt
-pip install causal-conv1d==1.4.0  mamba-ssm==2.2.2
+pip install causal-conv1d==1.5.0.post8  mamba-ssm==2.2.4
+```
+Installing `causal-conv1d==1.5.0.post8` and `mamba-ssm==2.2.4` via pip may take a long time or fail due to compilation.  
+It is recommended to download the precompiled `.whl` files instead:
+
+- [causal-conv1d Releases](https://github.com/Dao-AILab/causal-conv1d/releases) (find **1.5.0.post8**)
+- [mamba-ssm Releases](https://github.com/state-spaces/mamba/releases) (find **2.2.4**)
+
+Download the wheel matching your Python and CUDA version, then install it manually:
+
+```bash
+pip install causal_conv1d-1.5.0.post8...cuXXX-cp3XX-...whl
+pip install mamba_ssm-2.2.4...cuXXX-cp3XX-...whl
 ```
 
-### 3. Fine-Tuning for Colorectal Cancer Type Classification
+### 3. Tutorials
+
+We provide example tutorials in the `tutorials` folder to help you get started:
+
+- **1_celltype_annotation.ipynb** – Guide for cell type annotation  
+- **2_pesudo_time.ipynb** – Guide for pseudotime analysis  
+- **3_tumor_detection_on_cfDNA.ipynb** – Guide for cfDNA tumor deconvolution  
+
+You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. (The required datasets for these tutorials are uploading. It will be finished **before October 4th**.)
+
+### 4. Fine-Tuning for Colorectal Cancer Type Classification
 
 This repository provides a framework for fine-tuning the scWGBS-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scWGBS-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks.
 
@@ -106,39 +126,21 @@ The fine-tuning dataset should be prepared with the following files:
 - **scWGBS data** in `.npz` format, containing single-cell CpG site information.
 - **CSV files** for training and testing sets, specifying cell metadata and corresponding labels.
 
-You can download the required dataset from [Google Drive](https://drive.google.com/drive/folders/1PEAdRngaonY4TMEEX4tGO-zF7nqRuN52) and save it to the current directory (`./`). This will ensure that all necessary data files and model checkpoint **(That is the 4-layer model, scDNAm-GPT<u>small</u>. The 8-layer model will be release soon.)** are available for fine-tuning.
-
 The paths to these files should be specified in the configuration file (`config/finetuning/colorectal_cancer_type/training_args_fp16.json`).
 
 #### Path of Training Configuration:
 Specify paths in `config/finetuning/colorectal_cancer_type/training_args_fp16.json`:
 
 #### Configuration:
-The following configuration files are key for fine-tuning:
+The following configuration files are key for fine-tuning: (The required datasets for these tutorials are uploading. It will be finished **before October 4th**.)
 - **`config/finetuning/colorectal_cancer_type/training_args_fp16.json`**: Contains training hyperparameters such as batch size, learning rate, and model paths.
 - **`config/finetuning/colorectal_cancer_type/deepspeed_config_fp16.json`**: Optimizes training for large models using **DeepSpeed**.
 
 #### Submit the SLURM job with:
 ```bash
-sbatch script/finetuning/finetuning_colorectal_cancer_type.sh
+bash script/finetuning/finetuning_colorectal_cancer_type.sh
 ```
 
-### 4. Fine-Tuning for Deconvolution
-
-#### Required Files
-The fine-tuning dataset should be prepared with the following files:
-
-You can download the required dataset (deconv_2_partial.zip) from [Google Drive](https://drive.google.com/drive/folders/1PEAdRngaonY4TMEEX4tGO-zF7nqRuN52) and save it to the `data/`. The whole dataset was synthesized to 12TB. So, we only provide several examples to make sure the training has been ready to start. This will ensure that all necessary data files and model checkpoint are available for fine-tuning.
-
-#### Configuration:
-The following configuration files are key for fine-tuning:
-- **`config/finetuning/deconv_5type/training_args_fp16.json`**: Contains training hyperparameters such as batch size, learning rate, and model paths.
-- **`config/finetuning/deconv_5type/deepspeed_config_fp16.json`**: Optimizes training for large models using **DeepSpeed**.
-
-#### Submit the SLURM job with:
-```bash
-sbatch script/finetuning/finetuning_deconv_5type.sh
-```
 
 ### 5. Finetuning on Your Owner Data (scWGBS 6-mer Tokenizer and Processing Pipeline)
 

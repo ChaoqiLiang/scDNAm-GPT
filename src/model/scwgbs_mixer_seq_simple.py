@@ -116,6 +116,129 @@ def _init_weights(
                     p /= math.sqrt(n_residuals_per_layer * n_layer)
 
 
+# class scWGBSMixerModel(nn.Module):
+#     def __init__(
+#         self,
+#         d_model: int,
+#         n_layer: int,
+#         d_intermediate: int,
+#         vocab_size: int,
+#         ssm_cfg=None,
+#         attn_layer_idx=None,
+#         attn_cfg=None,
+#         norm_epsilon: float = 1e-5,
+#         rms_norm: bool = False,
+#         initializer_cfg=None,
+#         fused_add_norm=False,
+#         residual_in_fp32=False,
+#         device=None,
+#         dtype=None,
+#     ) -> None:
+#         factory_kwargs = {"device": device, "dtype": dtype}
+#         super().__init__()
+#         self.residual_in_fp32 = residual_in_fp32
+
+#         self.embedding = nn.Embedding(vocab_size, d_model, **factory_kwargs)
+
+#         # We change the order of residual and layer norm:
+#         # Instead of LN -> Attn / MLP -> Add, we do:
+#         # Add -> LN -> Attn / MLP / Mixer, returning both the residual branch (output of Add) and
+#         # the main branch (output of MLP / Mixer). The model definition is unchanged.
+#         # This is for performance reason: we can fuse add + layer_norm.
+#         self.fused_add_norm = fused_add_norm
+#         if self.fused_add_norm:
+#             if layer_norm_fn is None or rms_norm_fn is None:
+#                 raise ImportError("Failed to import Triton LayerNorm / RMSNorm kernels")
+
+#         self.layers = nn.ModuleList(
+#             [
+#                 create_block(
+#                     d_model,
+#                     d_intermediate=d_intermediate,
+#                     ssm_cfg=ssm_cfg,
+#                     attn_layer_idx=attn_layer_idx,
+#                     attn_cfg=attn_cfg,
+#                     norm_epsilon=norm_epsilon,
+#                     rms_norm=rms_norm,
+#                     residual_in_fp32=residual_in_fp32,
+#                     fused_add_norm=fused_add_norm,
+#                     layer_idx=i,
+#                     **factory_kwargs,
+#                 )
+#                 for i in range(n_layer)
+#             ]
+#         )
+
+#         self.norm_f = (nn.LayerNorm if not rms_norm else RMSNorm)(
+#             d_model, eps=norm_epsilon, **factory_kwargs
+#         )
+
+#         self.apply(
+#             partial(
+#                 _init_weights,
+#                 n_layer=n_layer,
+#                 **(initializer_cfg if initializer_cfg is not None else {}),
+#                 n_residuals_per_layer=1 if d_intermediate == 0 else 2,  # 2 if we have MLP
+#             )
+#         )
+
+#     def allocate_inference_cache(self, batch_size, max_seqlen, dtype=None, **kwargs):
+#         return {
+#             i: layer.allocate_inference_cache(batch_size, max_seqlen, dtype=dtype, **kwargs)
+#             for i, layer in enumerate(self.layers)
+#         }
+
+#     def forward(self, unmethy_input_ids, methy_input_ids, methy_ratios, inference_params=None, need_layer_hidden_states=False, **mixer_kwargs):
+#         unmethy_hidden_states = self.embedding(unmethy_input_ids)
+#         methy_states = self.embedding(methy_input_ids)
+#         methy_ratios_expanded = methy_ratios.unsqueeze(-1).to(unmethy_hidden_states.dtype)  # Make sure the dtype is consistent
+#         hidden_states = unmethy_hidden_states * (1.0 - methy_ratios_expanded) + methy_states * methy_ratios_expanded
+#         hidden_states = hidden_states.to(unmethy_hidden_states.dtype)  # Explicitly cast hidden_states to same dtype
+
+#         if need_layer_hidden_states:
+#             layer_hidden_states = []  # List to store hidden states of each layer
+#             # layer_hidden_states = []
+        
+#         residual = None
+#         for layer in self.layers:
+#             # Filter kwargs to only include those accepted by layer.forward
+#             valid_args = inspect.signature(layer.forward).parameters.keys()
+#             filtered_kwargs = {key: mixer_kwargs[key] for key in mixer_kwargs if key in valid_args}
+
+#             if need_layer_hidden_states:
+#                 layer_hidden_states.append(hidden_states)  # List to store hidden states of each layer
+            
+#             # Call layer.forward with filtered arguments
+#             hidden_states, residual = layer(
+#                 hidden_states, residual, inference_params=inference_params, **filtered_kwargs
+#             )
+#             # if need_layer_hidden_states:
+#             #     layer_hidden_states.append(hidden_states)  # Store the hidden state after this layer
+        
+#         if not self.fused_add_norm:
+#             residual = (hidden_states + residual) if residual is not None else hidden_states
+#             hidden_states = self.norm_f(residual.to(dtype=self.norm_f.weight.dtype))
+#         else:
+#             # Set prenorm=False here since we don't need the residual
+#             hidden_states = layer_norm_fn(
+#                 hidden_states,
+#                 self.norm_f.weight,
+#                 self.norm_f.bias,
+#                 eps=self.norm_f.eps,
+#                 residual=residual,
+#                 prenorm=False,
+#                 residual_in_fp32=self.residual_in_fp32,
+#                 is_rms_norm=isinstance(self.norm_f, RMSNorm)
+#             )
+        
+#         # Add the final hidden state after normalization
+#         if need_layer_hidden_states:
+#             layer_hidden_states.append(hidden_states)
+#             return hidden_states, layer_hidden_states  # Return all layer hidden states, including the final one
+#         else:
+#             return hidden_states
+
+
 class scWGBSMixerModel(nn.Module):
     def __init__(
         self,
@@ -188,12 +311,16 @@ class scWGBSMixerModel(nn.Module):
             for i, layer in enumerate(self.layers)
         }
 
-    def forward(self, unmethy_input_ids, methy_input_ids, methy_ratios, inference_params=None, **mixer_kwargs):
+    def forward(self, unmethy_input_ids, methy_input_ids, methy_ratios, inference_params=None, need_layer_hidden_states=False, **mixer_kwargs):
         unmethy_hidden_states = self.embedding(unmethy_input_ids)
         methy_states = self.embedding(methy_input_ids)
         methy_ratios_expanded = methy_ratios.unsqueeze(-1).to(unmethy_hidden_states.dtype)  # Make sure the dtype is consistent
         hidden_states = unmethy_hidden_states * (1.0 - methy_ratios_expanded) + methy_states * methy_ratios_expanded
         hidden_states = hidden_states.to(unmethy_hidden_states.dtype)  # Explicitly cast hidden_states to same dtype
+
+        if need_layer_hidden_states:
+            layer_hidden_states = [hidden_states]  # List to store hidden states of each layer
+            # layer_hidden_states = []
         
         residual = None
         for layer in self.layers:
@@ -205,6 +332,9 @@ class scWGBSMixerModel(nn.Module):
             hidden_states, residual = layer(
                 hidden_states, residual, inference_params=inference_params, **filtered_kwargs
             )
+            if need_layer_hidden_states:
+                layer_hidden_states.append(hidden_states)  # Store the hidden state after this layer
+        
         if not self.fused_add_norm:
             residual = (hidden_states + residual) if residual is not None else hidden_states
             hidden_states = self.norm_f(residual.to(dtype=self.norm_f.weight.dtype))
@@ -220,7 +350,13 @@ class scWGBSMixerModel(nn.Module):
                 residual_in_fp32=self.residual_in_fp32,
                 is_rms_norm=isinstance(self.norm_f, RMSNorm)
             )
-        return hidden_states
+        
+        # Add the final hidden state after normalization
+        if need_layer_hidden_states:
+            layer_hidden_states.append(hidden_states)
+            return hidden_states, layer_hidden_states  # Return all layer hidden states, including the final one
+        else:
+            return hidden_states
 
 
 class MambaLMHeadModel(nn.Module, GenerationMixin):

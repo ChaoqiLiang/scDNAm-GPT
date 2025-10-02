@@ -1,23 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-MIT License
-
-Copyright (c) 2025 ChaoqiLiang
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of 
-this software and associated documentation files (the "Software"), to deal in the 
-Software without restriction, including without limitation the rights to use, copy, 
-modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
-and to permit persons to whom the Software is furnished to do so, subject to the 
-following conditions:
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS 
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
 import os, sys
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if PROJECT_ROOT not in sys.path:
@@ -32,12 +12,14 @@ import numpy as np
 import torch.nn.functional as F
 from transformers import TrainingArguments, AutoTokenizer
 from transformers import Trainer as scWGBSTrainer
-from src.model.scwgbs_gpt import scWGBSGPTForSequenceClassification
-from src.dataset.scwgbs_dataset import TokensRatiosDataset, scWGBS_collate_TokensRatios
+from src.model.scwgbs_gpt import scWGBSGPTForSequenceClassification, scWGBSGPTForSequenceClassificationWithBatchCorrection
+from src.dataset.scwgbs_dataset import TokensRatiosDataset, scWGBS_collate_TokensRatios, TokensRatiosLoadALLDataset
 from sklearn import metrics
+from scipy.stats import pearsonr, spearmanr
 from safetensors.torch import load_file as safetensors_load
 import torch.distributed as dist
 import uuid
+from src.mambaconfig import MambaConfig
 
 def is_main_process():
     """
@@ -82,23 +64,14 @@ def load_config(json_path: str) -> dict:
         return json.load(f)
 
 
-# Custom method for trainer initialization
-def initialize_trainer(trainer_class, model, tokenizer, train_dataset, val_dataset, data_collator, training_args):
-    """
-    Initialize the Trainer with a custom save_model and _load_best_model method.
+import os
+import types
+import torch
+from peft import PeftModel, PeftConfig, get_peft_model
+from safetensors.torch import load_file as safetensors_load
 
-    Args:
-        trainer_class: Trainer class to use.
-        model: The model to train.
-        tokenizer: The tokenizer instance.
-        train_dataset: Training dataset.
-        val_dataset: Validation dataset.
-        data_collator: Data collator for batching.
-        training_args: Training arguments.
 
-    Returns:
-        scWGBSTrainer: Configured trainer instance.
-    """
+def initialize_trainer(trainer_class, model, tokenizer, train_dataset, val_dataset, data_collator, training_args, compute_metrics):
     trainer = trainer_class(
         model=model,
         args=training_args,
@@ -109,52 +82,79 @@ def initialize_trainer(trainer_class, model, tokenizer, train_dataset, val_datas
         compute_metrics=compute_metrics,
     )
 
-    # Custom save_model method
+
     def save_model(self, output_dir: str = None, **kwargs):
         if output_dir is None:
             output_dir = self.args.output_dir
-
         os.makedirs(output_dir, exist_ok=True)
-        self.model.save_pretrained(output_dir)
-        if self.tokenizer is not None:
-            self.tokenizer.save_pretrained(output_dir)
-        if hasattr(self.model, "config") and self.model.config is not None:
-            self.model.config.save_pretrained(output_dir)
 
-    # Custom method to load the best model
+        try:
+            # PEFT-aware save
+            if isinstance(self.model, PeftModel):
+                print("[PEFT] Saving LoRA adapter...")
+                self.model.save_pretrained(output_dir)
+                # Save classifier manually if it exists
+                if hasattr(self.model.model, "classify"):
+                    torch.save(self.model.model.classify.state_dict(), os.path.join(output_dir, "classify_head.pt"))
+                    print("[PEFT] Saved classifier head to classify_head.pt")
+            else:
+                print("[Base] Saving full model...")
+                self.model.save_pretrained(output_dir)
+        except Exception as e:
+            print(f"[Warning] Failed to save the model: {e}")
+
+        try:
+            if self.tokenizer is not None:
+                self.tokenizer.save_pretrained(output_dir)
+        except Exception as e:
+            print(f"[Warning] Failed to save the tokenizer: {e}")
+
+        try:
+            if hasattr(self.model, "config") and self.model.config is not None:
+                self.model.config.save_pretrained(output_dir)
+        except Exception as e:
+            print(f"[Warning] Failed to save the model config: {e}")
+
+
+    # ========== Custom load_best_model ==========
     def custom_load_best_model(self):
         if self.args.load_best_model_at_end and self.state.best_model_checkpoint is not None:
-            print(f"Loading best model from {self.state.best_model_checkpoint} (score: {self.state.best_metric}).")
-            
-            # Construct path for both formats
-            best_model_path_pytorch = os.path.join(self.state.best_model_checkpoint, "pytorch_model.bin")
-            best_model_path_safetensors = os.path.join(self.state.best_model_checkpoint, "adapter_model.safetensors")
-            
-            # Try loading from safetensors first (if the library is available)
-            if os.path.exists(best_model_path_safetensors):
-                try:
-                    state_dict = safetensors_load(best_model_path_safetensors)  # Load using safetensors
-                    self.model.load_state_dict(state_dict, strict=False)
-                    print(f"Loaded best model from safetensors: {best_model_path_safetensors}")
-                except Exception as e:
-                    print(f"Failed to load model from safetensors: {e}. Trying pytorch_model.bin...")
-                    if os.path.exists(best_model_path_pytorch):
-                        state_dict = torch.load(best_model_path_pytorch, map_location="cpu")
+            print(f"Loading best model from {self.state.best_model_checkpoint} (score: {self.state.best_metric})")
+
+            model_dir = self.state.best_model_checkpoint
+            safetensors_path = os.path.join(model_dir, "adapter_model.safetensors")
+            pytorch_path = os.path.join(model_dir, "pytorch_model.bin")
+            classify_path = os.path.join(model_dir, "classify_head.pt")
+
+            try:
+                if isinstance(self.model, PeftModel):
+                    print("[PEFT] Loading adapter from best checkpoint...")
+                    config = PeftConfig.from_pretrained(model_dir)
+                    base_model = self.model.base_model.model  # Extract original base model
+                    self.model = get_peft_model(base_model, config)
+                    self.model.load_adapter(model_dir, adapter_name="default")
+
+                    # Restore classifier head
+                    if hasattr(self.model.model, "classify") and os.path.exists(classify_path):
+                        self.model.model.classify.load_state_dict(torch.load(classify_path, map_location="cpu"))
+                        print("[PEFT] Loaded classifier head from classify_head.pt")
+                else:
+                    print("[Base] Loading full model state_dict...")
+                    if os.path.exists(safetensors_path):
+                        state_dict = safetensors_load(safetensors_path)
                         self.model.load_state_dict(state_dict, strict=False)
-                        print(f"Loaded best model from pytorch_model.bin: {best_model_path_pytorch}")
+                    elif os.path.exists(pytorch_path):
+                        state_dict = torch.load(pytorch_path, map_location="cpu")
+                        self.model.load_state_dict(state_dict, strict=False)
                     else:
-                        print(f"Best model not found at {best_model_path_pytorch}. Loading standard model.")
-            elif os.path.exists(best_model_path_pytorch):
-                # Fallback to pytorch_model.bin if safetensors is not available or fails
-                state_dict = torch.load(best_model_path_pytorch, map_location="cpu")
-                self.model.load_state_dict(state_dict, strict=False)
-                print(f"Loaded best model from pytorch_model.bin: {best_model_path_pytorch}")
-            else:
-                print(f"Best model not found at {best_model_path_pytorch} or {best_model_path_safetensors}. Loading standard model.")
+                        print("Warning: No model weights found at checkpoint.")
+            except Exception as e:
+                print(f"Failed to load best model: {e}")
 
     # Override Trainer methods
     trainer._load_best_model = types.MethodType(custom_load_best_model, trainer)
     trainer.save_model = types.MethodType(save_model, trainer)
+
     return trainer
 
 
@@ -170,8 +170,8 @@ def compute_metrics(eval_pred):
         dict: Computed metrics (accuracy, F1 score, MCC, precision, recall).
     """
     all_logits, all_labels = eval_pred
-    
-    has_batch = isinstance(all_logits, tuple) # Handle tuple logits
+    # print("!!!!!!!!!!!!!!!!!!!!!!!", all_logits, all_labels)
+    has_batch = False #isinstance(all_logits, tuple) # Handle tuple logits
     if has_batch:
         logits = all_logits[0]
         batch_logits = all_logits[1]
@@ -179,10 +179,11 @@ def compute_metrics(eval_pred):
         labels = all_labels[0]
         batches = all_labels[1]
     else:
-        logits = all_logits
+        logits = all_logits #[0]
         labels = all_labels
 
     # Compute probabilities and predictions
+
     probabilities = F.softmax(torch.tensor(logits), dim=-1).numpy()
     predictions = np.argmax(probabilities, axis=-1)
 
@@ -204,9 +205,7 @@ def compute_metrics(eval_pred):
         "f1": metrics.f1_score(labels, predictions, average="macro", zero_division=0),
         "matthews_correlation": metrics.matthews_corrcoef(labels, predictions),
         "precision": metrics.precision_score(labels, predictions, average="macro", zero_division=0),
-        "recall": metrics.recall_score(labels, predictions, average="macro", zero_division=0),
-        # "batch_accuracy": metrics.accuracy_score(batches, batch_predictions),
-        # "batch_matthews_correlation": metrics.matthews_corrcoef(batches, batch_predictions),
+        "recall": metrics.recall_score(labels, predictions, average="macro", zero_division=0)
     }
 
     if has_batch:
@@ -215,18 +214,51 @@ def compute_metrics(eval_pred):
 
     return re_dict
 
+
+# Metric computation for evaluation
+def compute_regression_metrics(eval_pred):
+    """
+    Compute evaluation metrics for a probabilistic regression task.
+
+    Args:
+        eval_pred: Tuple of predicted logits (after sigmoid) and true labels.
+
+    Returns:
+        dict: Computed metrics (RMSE, PCC, Spearman, and other relevant metrics).
+    """
+    logits, labels = eval_pred
+
+    # Apply sigmoid to get probabilities between 0 and 1
+    predicted_probs = torch.sigmoid(torch.tensor(logits)).squeeze(dim=1).numpy()  # Convert to numpy for metrics computation
+    labels = labels.numpy() if isinstance(labels, torch.Tensor) else labels
+
+    # Ensure that predicted_probs and labels are one-dimensional
+    assert predicted_probs.shape == labels.shape, "Predicted probabilities and labels must have the same shape"
+
+    # Compute RMSE (Root Mean Squared Error)
+    rmse = np.sqrt(metrics.mean_squared_error(labels, predicted_probs))
+
+    # Compute Pearson Correlation Coefficient (PCC)
+    pcc, _ = pearsonr(labels, predicted_probs)
+
+    # Compute Spearman's Rank Correlation (SPC)
+    spc, _ = spearmanr(labels, predicted_probs)
+
+    # Return computed metrics
+    return {
+        "rmse": rmse,
+        "pcc": pcc,
+        "spc": spc
+    }
+
+
 # Main function for finetuning
-def main():
+def main(training_args_dict):
     """
     Main function for fine-tuning the scWGBS model.
     """
-    parser = argparse.ArgumentParser(description="Fine-tune a scWGBS model.")
-    # parser.add_argument("--tokenizer_config_path", type=str, required=True, help="Path to the model configuration JSON file.")
-    parser.add_argument("--training_args_path", type=str, required=True, help="Path to the training arguments JSON file.")
-    args = parser.parse_args()
 
-    # Load configurations
-    training_args_dict = load_config(args.training_args_path)
+    # Load model configurations
     model_config_dict = load_config(Path(training_args_dict["pretrained_model_path"]) / "config.json")
 
     # Load tokenizer
@@ -240,7 +272,10 @@ def main():
                                         K_mer, tokenizer, type_json_path=training_args_dict["type_json_path"], 
                                         batch_type_json_path=training_args_dict.get("batch_type_json_path", None),
                                         need_labels=True, need_batch=training_args_dict.get("need_batch", False),
-                                        max_length=training_args_dict.get("max_length", None), 
+                                        use_length_scale=training_args_dict.get("train_use_length_scale", True),
+                                        bias_power=training_args_dict.get("train_bias_power", 0.4),
+                                        min_length=training_args_dict.get("min_length", 50000),
+                                        max_length=training_args_dict.get("max_length", 2000000), 
                                         random=training_args_dict.get("train_random"),
                                         use_sample=training_args_dict.get("use_sample", False),
                                         use_truncation=training_args_dict.get("use_truncation", True), 
@@ -251,6 +286,9 @@ def main():
                                       K_mer, tokenizer, type_json_path=training_args_dict["type_json_path"], 
                                       batch_type_json_path=training_args_dict.get("batch_type_json_path", None),
                                       need_labels=True, need_batch=training_args_dict.get("need_batch", False),
+                                      use_length_scale=training_args_dict.get("val_use_length_scale", False),
+                                      bias_power=training_args_dict.get("train_bias_power", None),
+                                      min_length=training_args_dict.get("min_length", 50000),
                                       max_length=training_args_dict.get("max_length", None),
                                       random=training_args_dict.get("val_random"),
                                       use_sample=training_args_dict.get("use_sample", False),
@@ -262,6 +300,9 @@ def main():
                                        K_mer, tokenizer, type_json_path=training_args_dict["type_json_path"], 
                                        batch_type_json_path=training_args_dict.get("batch_type_json_path", None),
                                        need_labels=True, need_batch=training_args_dict.get("need_batch", False),
+                                       use_length_scale=training_args_dict.get("test_use_length_scale", False),
+                                       bias_power=training_args_dict.get("train_bias_power", None),
+                                       min_length=training_args_dict.get("min_length", 50000),
                                        max_length=training_args_dict.get("max_length", None), 
                                        random=training_args_dict.get("test_random"),
                                        use_sample=training_args_dict.get("use_sample", False),
@@ -270,17 +311,64 @@ def main():
     
     data_collator = scWGBS_collate_TokensRatios(tokenizer=tokenizer)
 
+    # If distributed training is being used
+    if dist.is_available() and dist.is_initialized():
+        local_rank = dist.get_rank()  # Get the rank of the current process
+        device = torch.device(f"cuda:{local_rank}")  # Use the rank to assign the device
+    else:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     # Initialize model
-    Classifier = scWGBSGPTForSequenceClassification
-    model = Classifier.from_pretrained(
-        tokenizer=tokenizer,
-        pretrained_model_name=training_args_dict["pretrained_model_path"],
-        num_labels=train_dataset.num_labels,  # Assuming celltype is the label column
-        attention_mechanism=training_args_dict["attention_mechanism"],
-        lambd=training_args_dict.get("lambd", 1.0),
-        num_batches=train_dataset.num_batches
-    )
-    
+    Classifier = scWGBSGPTForSequenceClassificationWithBatchCorrection if training_args_dict.get("need_batch", False) else scWGBSGPTForSequenceClassification
+
+    train_from_scratch = training_args_dict.get("train_from_scratch", False)
+    use_tumor_ratios = training_args_dict.get("use_tumor_ratios", False)
+
+    if train_from_scratch:
+        # Initialize model randomly
+        print("# Initialize model randomly")
+        model = Classifier(
+            tokenizer=tokenizer,
+            config=MambaConfig(**model_config_dict),  # Initialize with the same configuration
+            device=device,  # Ensure it's on the right device (GPU/CPU)
+            num_labels=train_dataset.num_labels,  # Same number of labels for consistency
+            attention_mechanism=training_args_dict["attention_mechanism"],
+            batch_correction=training_args_dict.get("need_batch", False),
+            cross_attn_every_hidden_states=training_args_dict.get("cross_attn_every_hidden_states", True),
+            lambd=training_args_dict.get("lambd", 1.0),
+            num_batches=train_dataset.num_batches,
+            just_mamba=training_args_dict.get("just_mamba", False),
+            use_tumor_ratios=use_tumor_ratios
+        )
+    else:
+        print("# Load pretrained model")
+        model = Classifier.from_pretrained(
+            tokenizer=tokenizer,
+            pretrained_model_name=training_args_dict["pretrained_model_path"],
+            device=device,
+            num_labels=train_dataset.num_labels,  # Assuming celltype is the label column
+            attention_mechanism=training_args_dict["attention_mechanism"],
+            batch_correction=training_args_dict.get("need_batch", False),
+            cross_attn_every_hidden_states=training_args_dict.get("cross_attn_every_hidden_states", True),
+            lambd=training_args_dict.get("lambd", 1.0),
+            num_batches=train_dataset.num_batches,
+            just_mamba=training_args_dict.get("just_mamba", False),
+            use_tumor_ratios=use_tumor_ratios
+        )
+
+    if is_main_process():
+        # Print which parameters are trainable
+        print("Trainable parameters:")
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                print(f"- {name}")
+
+        # Count total and trainable parameters
+        total_params = sum(p.numel() for p in model.parameters())
+        trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        print(f"\nTotal parameters: {total_params:,}")
+        print(f"Trainable parameters: {trainable_params:,} ({trainable_params/total_params:.2%})")
+        
     # Check if Lora config exists and apply Lora fine-tuning
     lora_config = training_args_dict.get("lora_config", None)
     if lora_config:
@@ -322,6 +410,7 @@ def main():
         val_dataset=val_dataset,
         data_collator=data_collator,
         training_args=training_args,
+        compute_metrics=compute_metrics if not use_tumor_ratios else compute_regression_metrics
     )
     
     if is_main_process():
@@ -351,18 +440,24 @@ def main():
     if is_main_process():
         eval_results_path = os.path.join(training_args_dict["training_args"]["logging_dir"], "eval_results.json")
         with open(eval_results_path, "w") as f:
-            json.dump(eval_results, f, indent=4)
+            json.dump(eval_results, f)
         print("Validation results:", eval_results)
 
     test_results = trainer.evaluate(test_dataset)
     if is_main_process():
         test_results_path = os.path.join(training_args_dict["training_args"]["logging_dir"], "test_results.json")
         with open(test_results_path, "w") as f:
-            json.dump(test_results, f, indent=4)
+            json.dump(test_results, f)
         print("Test results:", test_results)
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="Fine-tune a scWGBS model.")
+    parser.add_argument("--local_rank", type=int, default=0, help="Local rank for distributed training")
+    # parser.add_argument("--tokenizer_config_path", type=str, required=True, help="Path to the model configuration JSON file.")
+    parser.add_argument("--training_args_path", type=str, required=True, help="Path to the training arguments JSON file.")
+    args = parser.parse_args()
 
     # 1) If MASTER_ADDR/MASTER_PORT are not set, infer from the Slurm node list
     #    Here, we use the first node as MASTER_ADDR, but you can modify this logic as needed
@@ -400,9 +495,10 @@ if __name__ == "__main__":
         torch.cuda.set_device(local_rank)
 
     # 5) Set a unique Triton cache directory for each process to avoid conflicts during multi-process compilation
+    training_args_dict = load_config(args.training_args_path)
     rank_str = os.environ.get("SLURM_PROCID", "0")
     unique_id = str(uuid.uuid4())  # Generate a unique ID
-    os.environ["TRITON_CACHE_DIR"] = f"triton_cache/finetuning/{unique_id}_{rank_str}"
+    os.environ["TRITON_CACHE_DIR"] = f"{training_args_dict['training_args']['logging_dir']}/triton_cache/finetuning/{unique_id}_{rank_str}"
     os.makedirs(os.environ["TRITON_CACHE_DIR"], exist_ok=True)
 
     # 6) Fix the random seed for reproducibility
@@ -418,4 +514,4 @@ if __name__ == "__main__":
           "GPU count (torch.cuda.device_count()) =", torch.cuda.device_count())
 
     # 8) Call your main logic
-    main()
+    main(training_args_dict)
