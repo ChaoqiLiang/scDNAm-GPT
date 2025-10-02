@@ -110,15 +110,15 @@ pip install mamba_ssm-2.2.4...cuXXX-cp3XX-...whl
 
 We provide example tutorials in the `tutorials` folder to help you get started:
 
-- **1_celltype_annotation.ipynb** – Guide for cell type annotation  
-- **2_pesudo_time.ipynb** – Guide for pseudotime analysis  
-- **3_tumor_detection_on_cfDNA.ipynb** – Guide for cfDNA tumor deconvolution  
+- [**1_celltype_annotation.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/1_celltype_annotation.ipynb) – Guide for cell type annotation  
+- [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/2_pesudo_time.ipynb) – Guide for pseudotime analysis  
+- [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Guide for cfDNA tumor deconvolution  
 
 You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. (The required datasets for these tutorials are uploading. It will be finished **before October 4th**.)
 
 ### 4. Fine-Tuning for Colorectal Cancer Type Classification
 
-This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks.
+This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks. (The required datasets for Colorectal Cancer Type Classification are uploading. It will be finished **before October 4th**.)
 
 #### Required Files
 The fine-tuning dataset should be prepared with the following files:
@@ -132,7 +132,7 @@ The paths to these files should be specified in the configuration file (`config/
 Specify paths in `config/finetuning/colorectal_cancer_type/training_args_fp16.json`:
 
 #### Configuration:
-The following configuration files are key for fine-tuning: (The required datasets for these tutorials are uploading. It will be finished **before October 4th**.)
+The following configuration files are key for fine-tuning:
 - **`config/finetuning/colorectal_cancer_type/training_args_fp16.json`**: Contains training hyperparameters such as batch size, learning rate, and model paths.
 - **`config/finetuning/colorectal_cancer_type/deepspeed_config_fp16.json`**: Optimizes training for large models using **DeepSpeed**.
 
