@@ -114,22 +114,74 @@ We provide example tutorials in the `tutorials` folder to help you get started:
 - [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/2_pesudo_time.ipynb) – Demo for pseudotime analysis  
 - [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Demo for cfDNA tumor deconvolution  
 
-You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. (The required datasets and models for these tutorials are uploading. It will be finished **before October 4th**.)
+You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. 
+
+#### Data for Tutorials
+
+Each tutorial requires example data. Please download the archives from **Google Drive** and extract them into the `tutorials/` folder:
+
+- **Download link (all datasets):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing
+
+| Tutorial notebook | Archive to download | Extracted folder (place under `tutorials/`) |
+|---|---|---|
+| `1_celltype_annotation.ipynb` | `human_body.tar.gz` | `tutorials/human_body/` |
+| `2_pesudo_time.ipynb` | `human_esc.tar.gz` | `tutorials/human_esc/` |
+| `3_tumor_detection_on_cfDNA.ipynb` | `tumor_detection.tar.gz` | `tutorials/tumor_detection/` |
+
+**Quick extract commands (Linux/macOS / Git Bash):**
+```bash
+# ensure you're at the project root: scDNAm-GPT/
+tar -xzvf human_body.tar.gz -C tutorials/
+tar -xzvf human_esc.tar.gz -C tutorials/
+tar -xzvf tumor_detection.tar.gz -C tutorials/
+```
+
+After extraction, your layout should look like:
+```
+tutorials/
+├── 1_celltype_annotation.ipynb
+├── 2_pesudo_time.ipynb
+├── 3_tumor_detection_on_cfDNA.ipynb
+├── human_body/
+├── human_esc/
+└── tumor_detection/
+```
 
 ### 4. Fine-Tuning for Colorectal Cancer Type Classification
 
-This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks. (The required datasets and models for Colorectal Cancer Type Classification are uploading. It will be finished **before October 4th**.)
+This repository provides a framework for fine-tuning the **scDNAm-GPT** model on single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Here we focus on colorectal cancer type classification. The model uses a Mamba-based architecture with specialized attention mechanisms for long-sequence classification.
 
 #### Required Files
-The fine-tuning dataset should be prepared with the following files:
 
-- **scWGBS data** in `.npz` format, containing single-cell CpG site information.
-- **CSV files** for training and testing sets, specifying cell metadata and corresponding labels.
+Prepare the fine-tuning dataset and pretrained weights as follows:
 
-The paths to these files should be specified in the configuration file (`config/finetuning/colorectal_cancer_type/training_args_fp16.json`).
+- **Download (Google Drive):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing  
+- **Archives to download:**  
+  - `pretrained_model.tar.gz` – contains pretrained checkpoints  
+  - `data.tar.gz` – contains the fine-tuning dataset (CSV splits and `.npz` scWGBS arrays)
+
+Extract both archives into the **project root** (the `scDNAm-GPT/` directory). After extraction, your layout should look like:
+```
+scDNAm-GPT/
+├── data/
+├── pretrained_model/
+│   ├── human_and_mouse_brain_pretrained_model/
+│   ├── human_body_pretrain_model/
+│   └── scDNAm-GPT_small/
+├── tutorials/
+├── src/  # (example)
+└── ...
+```
+
+**Quick extract commands (Linux/macOS / Git Bash):**
+```bash
+# ensure you're at the project root: scDNAm-GPT/
+tar -xzvf pretrained_model.tar.gz -C .
+tar -xzvf data.tar.gz -C .
+```
 
 #### Path of Training Configuration:
-Specify paths in `config/finetuning/colorectal_cancer_type/training_args_fp16.json`:
+Training configuration is in `config/finetuning/colorectal_cancer_type/training_args_fp16.json`:
 
 #### Configuration:
 The following configuration files are key for fine-tuning:
@@ -142,7 +194,7 @@ bash script/finetuning/finetuning_colorectal_cancer_type.sh
 ```
 
 
-### 5. Finetuning on Your Owner Data (scWGBS 6-mer Tokenizer and Processing Pipeline)
+### 5. Finetuning on Your Owner Data (scDNAm 6-mer Tokenizer and Processing Pipeline)
 
 This repository provides a Python-based pipeline to process single-cell whole-genome bisulfite sequencing (scWGBS) data from `.tsv.gz` files. It extracts 6-mer nucleotide sequences around CpG sites, tokenizes them with a custom tokenizer, and outputs methylation ratios, positions, and chromosome identifiers.
 
@@ -152,14 +204,14 @@ This repository provides a Python-based pipeline to process single-cell whole-ge
 2. **Reads each `.tsv.gz` file** in chunks.  
 3. **Extracts the 6-mer** around each CpG site.  
 4. **Performs reverse-complement** for negative-strand reads.  
-5. **Uses a custom tokenizer** (e.g., `scWGBS 6-mer tokenizer`) to convert the 6-mer sequence into integer token IDs.  
+5. **Uses a custom tokenizer** (e.g., `scDNAm 6-mer tokenizer`) to convert the 6-mer sequence into integer token IDs.  
 6. **Calculates methylation ratios** by merging coverage at the same positions (summing total reads and methylated reads).  
 7. **Saves the token IDs**, methylation ratios, genomic positions, and chromosome identifiers in compressed `.npz` files.
 
-This pipeline is designed for large-scale parallel processing of scWGBS data.
+This pipeline is designed for large-scale parallel processing of scDNAm data.
 
 #### Features
-- Processes `.tsv.gz` files containing scWGBS data.
+- Processes `.tsv.gz` files containing scDNAm data.
 - Extracts and tokenizes 6-mer sequences surrounding CpG sites.
 - Computes methylation ratios and saves them in `.npz` files.
 - Handles multiple chromosomes and large datasets using parallel processing.
@@ -171,7 +223,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 - **Reference Genome FASTA** (e.g., `mm10.fa` or `hg38.fa`) indexed via [pyfaidx](https://github.com/mdshw5/pyfaidx).  
   Make sure it’s accessible for random access. Typically, `pyfaidx` will create an `.fai` index the first time you access the file.  
 
-- **scWGBS .tsv.gz files**: This pipeline assumes each row is of the form:
+- **scDNAm .tsv.gz files**: This pipeline assumes each row is of the form:
 
 | Chromosome | Start Position | Strand | CpG Sequence | Methylated Reads | Total Reads |
 |------------|----------------|--------|--------------|------------------|-------------|
@@ -187,7 +239,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 
 ```bash
 python data/process_scwgbs.py \
-    --base_dir /path/to/scWGBS/data/your_tsv_path \
+    --base_dir /path/to/scDNAm/data/your_tsv_path \
     --tokenizer_dir src/tokenizers/scdnam_6mer \
     --chromosomes chrM chrX chrY chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 \
     --chunk_size 10000 \
