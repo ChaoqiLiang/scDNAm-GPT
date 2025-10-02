@@ -114,11 +114,11 @@ We provide example tutorials in the `tutorials` folder to help you get started:
 - [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/2_pesudo_time.ipynb) – Demo for pseudotime analysis  
 - [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Demo for cfDNA tumor deconvolution  
 
-You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. (The required datasets for these tutorials are uploading. It will be finished **before October 4th**.)
+You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. (The required datasets and models for these tutorials are uploading. It will be finished **before October 4th**.)
 
 ### 4. Fine-Tuning for Colorectal Cancer Type Classification
 
-This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks. (The required datasets for Colorectal Cancer Type Classification are uploading. It will be finished **before October 4th**.)
+This repository provides a framework for fine-tuning the scDNAm-GPT model, designed for processing single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Specifically, it focuses on fine-tuning for colorectal cancer type classification using the scDNAm-GPT model. The model leverages mamba-based architectures with specialized attention mechanisms for sequence classification tasks. (The required datasets and models for Colorectal Cancer Type Classification are uploading. It will be finished **before October 4th**.)
 
 #### Required Files
 The fine-tuning dataset should be prepared with the following files:
@@ -136,7 +136,7 @@ The following configuration files are key for fine-tuning:
 - **`config/finetuning/colorectal_cancer_type/training_args_fp16.json`**: Contains training hyperparameters such as batch size, learning rate, and model paths.
 - **`config/finetuning/colorectal_cancer_type/deepspeed_config_fp16.json`**: Optimizes training for large models using **DeepSpeed**.
 
-#### Submit the SLURM job with:
+#### Submit the job with:
 ```bash
 bash script/finetuning/finetuning_colorectal_cancer_type.sh
 ```
@@ -189,7 +189,7 @@ This pipeline is designed for large-scale parallel processing of scWGBS data.
 python data/process_scwgbs.py \
     --base_dir /path/to/scWGBS/data/your_tsv_path \
     --tokenizer_dir src/tokenizers/scwgbs_6mer \
-    --chromosomes chrM chrX chrY chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 \
+    --chromosomes chrM chrX chrY chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 \
     --chunk_size 10000 \
     --max_workers 16
 ```
