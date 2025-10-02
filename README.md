@@ -35,7 +35,6 @@
   </div>
 </div>
 
-
 ## 🌟 Highlights
 🧬 **Analyzing Single-Cell Methylation Data** | 🌐 **Whole-Genome-Scale Context Modeling** | 🔬 **Single-CpG Resolution** | ⚡ **Mamba-Powered Speed**
 
