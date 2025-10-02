@@ -119,7 +119,7 @@ You can open these notebooks and follow the step-by-step instructions to reprodu
 
 Each tutorial requires example data. Please download the archives from **Google Drive** and extract them into the `tutorials/` folder:
 
-- **Download link (all datasets):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing
+- **Download link (all datasets and models):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing
 
 | Tutorial notebook | Archive to download | Extracted folder (place under `tutorials/`) |
 |---|---|---|
