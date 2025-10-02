@@ -96,10 +96,10 @@ pip install causal-conv1d==1.5.0.post8  mamba-ssm==2.2.4
 Installing `causal-conv1d==1.5.0.post8` and `mamba-ssm==2.2.4` via pip may take a long time or fail due to compilation.  
 It is recommended to download the precompiled `.whl` files instead:
 
-- [causal-conv1d Releases](https://github.com/Dao-AILab/causal-conv1d/releases) (find **1.5.0.post8**)
-- [mamba-ssm Releases](https://github.com/state-spaces/mamba/releases) (find **2.2.4**)
+- [causal-conv1d Releases](https://github.com/Dao-AILab/causal-conv1d/releases) (find **1.5.0.post8** and expand **Assets**)
+- [mamba-ssm Releases](https://github.com/state-spaces/mamba/releases) (find **2.2.4** and expand **Assets**)
 
-Download the wheel matching your Python and CUDA version, then install it manually:
+Download the wheel matching your Python, Pytorch and CUDA version, then install it manually:
 
 ```bash
 pip install causal_conv1d-1.5.0.post8...cuXXX-cp3XX-...whl
