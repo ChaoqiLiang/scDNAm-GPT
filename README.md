@@ -160,6 +160,14 @@ Prepare the fine-tuning dataset and pretrained weights as follows:
   - `pretrained_model.tar.gz` – contains pretrained checkpoints  
   - `data.tar.gz` – contains the fine-tuning dataset (CSV splits and `.npz` scWGBS arrays)
 
+
+**Quick extract commands (Linux/macOS / Git Bash):**
+```bash
+# ensure you're at the project root: scDNAm-GPT/
+tar -xzvf pretrained_model.tar.gz -C .
+tar -xzvf data.tar.gz -C .
+```
+
 Extract both archives into the **project root** (the `scDNAm-GPT/` directory). After extraction, your layout should look like:
 ```
 scDNAm-GPT/
@@ -171,13 +179,6 @@ scDNAm-GPT/
 ├── tutorials/
 ├── src/  # (example)
 └── ...
-```
-
-**Quick extract commands (Linux/macOS / Git Bash):**
-```bash
-# ensure you're at the project root: scDNAm-GPT/
-tar -xzvf pretrained_model.tar.gz -C .
-tar -xzvf data.tar.gz -C .
 ```
 
 #### Path of Training Configuration:
