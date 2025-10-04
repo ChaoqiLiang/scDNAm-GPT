@@ -174,7 +174,7 @@ scDNAm-GPT/
 ├── data/
 ├── pretrained_model/
 │   ├── human_and_mouse_brain_pretrained_model/
-│   ├── human_body_pretrain_model/
+│   ├── human_body_and_mouse_pretrain_model/
 │   └── scDNAm-GPT_small/
 ├── tutorials/
 ├── src/  # (example)
