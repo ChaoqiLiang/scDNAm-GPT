@@ -99,21 +99,16 @@ class scDNAmGPTForAnalysis(scDNAmGPTForSequenceClassification):
         config,
         tokenizer,
         num_labels: int,
-        num_batches: int = None,
         attention_mechanism: dict = None,
         initializer_cfg=None,
         device=None,
         dtype=None,
-        batch_correction=False,
-        lambd=1.0,
         cross_attn_every_hidden_states: Optional[bool]=False,
-        use_tumor_ratios: Optional[bool]=False,
         *args,
         **kwargs
     ) -> None:
         """Initialize the sequence classification model."""
-        self.batch_correction = batch_correction
-        super().__init__(config, tokenizer, num_labels, num_batches, attention_mechanism, initializer_cfg, device, dtype, batch_correction, need_layer_hidden_states=cross_attn_every_hidden_states, cross_attn_every_hidden_states=cross_attn_every_hidden_states, lambd=lambd, use_tumor_ratios=use_tumor_ratios)
+        super().__init__(config, tokenizer, num_labels, attention_mechanism, initializer_cfg, device, dtype, need_layer_hidden_states=cross_attn_every_hidden_states, cross_attn_every_hidden_states=cross_attn_every_hidden_states)
 
     def forward(
         self,
@@ -143,123 +138,84 @@ class scDNAmGPTForAnalysis(scDNAmGPTForSequenceClassification):
         if attention_mask is None:
             attention_mask = (methy_input_ids != self.pad_token_id).int()
 
-        if self.just_mamba:
+        if self.cross_attn_every_hidden_states:
             last_non_padding_indices = attention_mask.sum(dim=1) - 1
-            batch_size, seq_len, embed_dim = hidden_states.size()
-            cls_token_states = hidden_states[torch.arange(batch_size), last_non_padding_indices]
-            norm_attn_outputs_for_save = cls_token_states
-            norm_attn_outputs = self.norm(cls_token_states)
-        
-        else:
-            if self.cross_attn_every_hidden_states:
-                last_non_padding_indices = attention_mask.sum(dim=1) - 1
-                batch_size, seq_len, embed_dim = layer_hidden_states[0].size()
+            batch_size, seq_len, embed_dim = layer_hidden_states[0].size()
 
-                # Initialize list to store attention outputs for each layer
-                norm_attn_outputs, attn_weights = [], []
-                
-                # Iterate through each layer's hidden state and apply attention separately
-                layer_hidden_states = layer_hidden_states[:-2] + layer_hidden_states[-1:]
-                for i, hidden_states in enumerate(layer_hidden_states):
-
-                    cls_token_states = hidden_states[torch.arange(batch_size), last_non_padding_indices]
-                    key_padding_mask = ~attention_mask.bool()
-                    # print(cls_token_states.shape, "cls_token_states!!!!!!!!!!!!!!!!")
-
-                    if hasattr(self, "query_proj") or hasattr(self, "query_proj_layers"):
-                        q_proj = self.query_proj_layers[i](cls_token_states.unsqueeze(1))
-                        k_proj = self.key_proj_layers[i](hidden_states)
-                        v_proj = self.value_proj_layers[i](hidden_states)
-                    else:
-                        q_proj = cls_token_states.unsqueeze(1)
-                        k_proj = hidden_states
-                        v_proj = hidden_states
-                    
-                    attn_output, attn_weight = self.attention_layers[i](q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
-
-                    # Store the attention output for this layer
-                    norm_attn_outputs.append(self.norm(attn_output))
-                    attn_weights.append(attn_weight)
-                
-                if return_dict:
-                    norm_attn_outputs_for_save = torch.cat(norm_attn_outputs, dim=1)
-                    
-                # Aggregate the attention outputs (e.g., sum or average across layers)
-                norm_attn_outputs = torch.sum(torch.cat(norm_attn_outputs, dim=1), dim=1)
-                attn_weights = torch.cat(attn_weights, dim=1) #.permute(1, 0, 2)
-                # print(norm_attn_outputs.shape, "norm_attn_outputs!!!!!!!!!!!!!!!!")
+            # Initialize list to store attention outputs for each layer
+            norm_attn_outputs, attn_weights = [], []
             
-            else:
-                last_non_padding_indices = attention_mask.sum(dim=1) - 1
-                batch_size, seq_len, embed_dim = hidden_states.size()
+            # Iterate through each layer's hidden state and apply attention separately
+            layer_hidden_states = layer_hidden_states[:-2] + layer_hidden_states[-1:]
+            for i, hidden_states in enumerate(layer_hidden_states):
+
                 cls_token_states = hidden_states[torch.arange(batch_size), last_non_padding_indices]
+                key_padding_mask = ~attention_mask.bool()
                 # print(cls_token_states.shape, "cls_token_states!!!!!!!!!!!!!!!!")
 
-                key_padding_mask = ~attention_mask.bool()
-
-                if hasattr(self, "query_proj"):
-                    q_proj = self.query_proj(cls_token_states.unsqueeze(1))
-                    k_proj = self.key_proj(hidden_states)
-                    v_proj = self.value_proj(hidden_states)
+                if hasattr(self, "query_proj") or hasattr(self, "query_proj_layers"):
+                    q_proj = self.query_proj_layers[i](cls_token_states.unsqueeze(1))
+                    k_proj = self.key_proj_layers[i](hidden_states)
+                    v_proj = self.value_proj_layers[i](hidden_states)
                 else:
                     q_proj = cls_token_states.unsqueeze(1)
                     k_proj = hidden_states
                     v_proj = hidden_states
+                
+                attn_output, attn_weight = self.attention_layers[i](q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
 
-                attn_output, attn_weights = self.attention(q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
-                attn_output = attn_output.squeeze(1)
+                # Store the attention output for this layer
+                norm_attn_outputs.append(self.norm(attn_output))
+                attn_weights.append(attn_weight)
+            
+            if return_dict:
+                norm_attn_outputs_for_save = torch.cat(norm_attn_outputs, dim=1)
+                
+            # Aggregate the attention outputs (e.g., sum or average across layers)
+            norm_attn_outputs = torch.sum(torch.cat(norm_attn_outputs, dim=1), dim=1)
+            attn_weights = torch.cat(attn_weights, dim=1) #.permute(1, 0, 2)
+            # print(norm_attn_outputs.shape, "norm_attn_outputs!!!!!!!!!!!!!!!!")
+        
+        else:
+            last_non_padding_indices = attention_mask.sum(dim=1) - 1
+            batch_size, seq_len, embed_dim = hidden_states.size()
+            cls_token_states = hidden_states[torch.arange(batch_size), last_non_padding_indices]
+            # print(cls_token_states.shape, "cls_token_states!!!!!!!!!!!!!!!!")
 
-                norm_attn_outputs = self.norm(attn_output)
-                if return_dict:
-                    norm_attn_outputs_for_save = norm_attn_outputs
+            key_padding_mask = ~attention_mask.bool()
+
+            if hasattr(self, "query_proj"):
+                q_proj = self.query_proj(cls_token_states.unsqueeze(1))
+                k_proj = self.key_proj(hidden_states)
+                v_proj = self.value_proj(hidden_states)
+            else:
+                q_proj = cls_token_states.unsqueeze(1)
+                k_proj = hidden_states
+                v_proj = hidden_states
+
+            attn_output, attn_weights = self.attention(q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
+            attn_output = attn_output.squeeze(1)
+
+            norm_attn_outputs = self.norm(attn_output)
+            if return_dict:
+                norm_attn_outputs_for_save = norm_attn_outputs
         
         # Classify using the normalized attention output
-        if not self.use_tumor_ratios:
-            logits = self.classify(norm_attn_outputs)
-        # print(logits)
-        # # Compute loss
-        #     loss = nn.CrossEntropyLoss()(logits, labels)
+        logits = self.classify(norm_attn_outputs)
 
-            # Return the result based on return_dict flag
-            if not return_dict:
-                return (loss, logits) if loss is not None else (logits,)
+        # Return the result based on return_dict flag
+        if not return_dict:
+            return (loss, logits) if loss is not None else (logits,)
 
-            return {
-                "logits": logits,
-                "labels": labels,
-                # "loss": loss,
-                "attn_weights": attn_weights,
-                "norm_attn_outputs": norm_attn_outputs_for_save,
-                "hidden_states": masked_mean(hidden_states, attention_mask),
-            }
+        return {
+            "logits": logits,
+            "labels": labels,
+            # "loss": loss,
+            "attn_weights": attn_weights,
+            "norm_attn_outputs": norm_attn_outputs_for_save,
+            "hidden_states": masked_mean(hidden_states, attention_mask),
+        }
 
-        else:
-            logits = self.regression(norm_attn_outputs)
-
-            # Apply sigmoid to ensure the output is between 0 and 1
-            predicted_probs = torch.sigmoid(logits).squeeze(dim=1)
-
-            # Preprocess labels: divide by 100 and convert to float
-            processed_labels = (labels.to(predicted_probs.dtype) / 100.0)
-
-            # print("predicted_probs:", predicted_probs, "; processed_labels:", processed_labels)
-
-            # # Compute MSE loss
-            # loss = nn.MSELoss()(predicted_probs, processed_labels)
-
-            # Return the result based on return_dict flag
-            if not return_dict:
-                return (loss, logits) if loss is not None else (logits,)
-            
-            return {
-                "logits": logits,
-                "labels": labels,
-                # "loss": loss,
-                "predicted_probs": predicted_probs,
-                "attn_weights": attn_weights,
-                "norm_attn_outputs": norm_attn_outputs_for_save,
-                "hidden_states": masked_mean(hidden_states, attention_mask),
-            }
 
 # Add a function for running inference on a dataset
 def run_inference_on_dataset(model, dataset, tokenizer, data_collator, device, output_dir, dataset_name, batch_size=1):
@@ -422,8 +378,6 @@ def inference():
             test_csv_file,
             inference_args_dict["test_root_path"],
             K_mer, tokenizer, inference_args_dict["type_json_path"],
-            batch_type_json_path=inference_args_dict.get("batch_type_json_path", None),
-            need_batch=inference_args_dict.get("need_batch", False),
             need_labels=True,
             need_analysis=True,
             max_length=inference_args_dict.get("max_length", None),
@@ -456,8 +410,6 @@ def inference():
             train_csv_file,
             inference_args_dict["train_root_path"],
             K_mer, tokenizer, inference_args_dict["type_json_path"],
-            batch_type_json_path=inference_args_dict.get("batch_type_json_path", None),
-            need_batch=inference_args_dict.get("need_batch", False),
             need_labels=True,
             need_analysis=True,
             max_length=inference_args_dict.get("max_length", None),

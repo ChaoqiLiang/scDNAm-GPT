@@ -3,7 +3,7 @@ output_dir/
 tmp/
 tutorials/output_dir/
 tutorials/human_esc
-data/crc/
+data/crc_hg38/
 pretrained_model/
 
 slurm-*.out

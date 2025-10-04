@@ -1,5 +1,5 @@
 {
-  "pretrained_model_path": "pretrained_model/human_body_pretrain_model",
+  "pretrained_model_path": "pretrained_model/human_body_and_mouse_pretrain_model",
   "type_json_path": "data/finetuning_data_csv/colorectal_cancer_type/colorectal_cancer_type.json",
   "train_root_path": "data/crc/scWGBS_with_nucleotide_change_10mer_tokens_npz",
   "test_root_path": "data/crc/scWGBS_with_nucleotide_change_10mer_tokens_npz",
@@ -14,7 +14,6 @@
   "train_bias_power": 0.6,
   "use_sample": false,
   "use_truncation": true,
-  "need_batch": false,
   "cross_attn_every_hidden_states": true,
   "selective_chrs": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22],
   "min_length": 1000000,

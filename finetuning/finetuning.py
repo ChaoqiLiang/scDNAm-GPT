@@ -12,8 +12,8 @@ import numpy as np
 import torch.nn.functional as F
 from transformers import TrainingArguments, AutoTokenizer
 from transformers import Trainer as scDNAmTrainer
-from src.model.scdnam_gpt import scDNAmGPTForSequenceClassification, scDNAmGPTForSequenceClassificationWithBatchCorrection
-from src.dataset.scdnam_dataset import TokensRatiosDataset, scDNAm_collate_TokensRatios, TokensRatiosLoadALLDataset
+from src.model.scdnam_gpt import scDNAmGPTForSequenceClassification
+from src.dataset.scdnam_dataset import TokensRatiosDataset, scDNAm_collate_TokensRatios
 from sklearn import metrics
 from scipy.stats import pearsonr, spearmanr
 from safetensors.torch import load_file as safetensors_load
@@ -170,34 +170,17 @@ def compute_metrics(eval_pred):
         dict: Computed metrics (accuracy, F1 score, MCC, precision, recall).
     """
     all_logits, all_labels = eval_pred
-    # print("!!!!!!!!!!!!!!!!!!!!!!!", all_logits, all_labels)
-    has_batch = False #isinstance(all_logits, tuple) # Handle tuple logits
-    if has_batch:
-        logits = all_logits[0]
-        batch_logits = all_logits[1]
-        batch_reversed_logits = all_logits[2]
-        labels = all_labels[0]
-        batches = all_labels[1]
-    else:
-        logits = all_logits #[0]
-        labels = all_labels
+
+    logits = all_logits #[0]
+    labels = all_labels
 
     # Compute probabilities and predictions
 
     probabilities = F.softmax(torch.tensor(logits), dim=-1).numpy()
     predictions = np.argmax(probabilities, axis=-1)
-
-    if has_batch:
-        batch_reversed_probabilities = F.softmax(torch.tensor(batch_reversed_logits), dim=-1).numpy()
-        batch_reversed_predictions = np.argmax(batch_reversed_probabilities, axis=-1)
-
-        batch_probabilities = F.softmax(torch.tensor(batch_logits), dim=-1).numpy()
-        batch_predictions = np.argmax(batch_probabilities, axis=-1)
     
     if is_main_process():
         print("Confusion Matrix:", metrics.confusion_matrix(labels, predictions))
-        if has_batch:
-            print("Batch-Reversed Confusion Matrix:", metrics.confusion_matrix(batches, batch_reversed_predictions))
 
     # Compute metrics
     re_dict = {
@@ -208,48 +191,7 @@ def compute_metrics(eval_pred):
         "recall": metrics.recall_score(labels, predictions, average="macro", zero_division=0)
     }
 
-    if has_batch:
-        re_dict["batch_accuracy"] = metrics.accuracy_score(batches, batch_predictions)
-        re_dict["batch_matthews_correlation"] = metrics.matthews_corrcoef(batches, batch_predictions)
-
     return re_dict
-
-
-# Metric computation for evaluation
-def compute_regression_metrics(eval_pred):
-    """
-    Compute evaluation metrics for a probabilistic regression task.
-
-    Args:
-        eval_pred: Tuple of predicted logits (after sigmoid) and true labels.
-
-    Returns:
-        dict: Computed metrics (RMSE, PCC, Spearman, and other relevant metrics).
-    """
-    logits, labels = eval_pred
-
-    # Apply sigmoid to get probabilities between 0 and 1
-    predicted_probs = torch.sigmoid(torch.tensor(logits)).squeeze(dim=1).numpy()  # Convert to numpy for metrics computation
-    labels = labels.numpy() if isinstance(labels, torch.Tensor) else labels
-
-    # Ensure that predicted_probs and labels are one-dimensional
-    assert predicted_probs.shape == labels.shape, "Predicted probabilities and labels must have the same shape"
-
-    # Compute RMSE (Root Mean Squared Error)
-    rmse = np.sqrt(metrics.mean_squared_error(labels, predicted_probs))
-
-    # Compute Pearson Correlation Coefficient (PCC)
-    pcc, _ = pearsonr(labels, predicted_probs)
-
-    # Compute Spearman's Rank Correlation (SPC)
-    spc, _ = spearmanr(labels, predicted_probs)
-
-    # Return computed metrics
-    return {
-        "rmse": rmse,
-        "pcc": pcc,
-        "spc": spc
-    }
 
 
 # Main function for finetuning
@@ -270,8 +212,7 @@ def main(training_args_dict):
     train_dataset = TokensRatiosDataset(training_args_dict["train_csv_file"],
                                         training_args_dict["train_root_path"], 
                                         K_mer, tokenizer, type_json_path=training_args_dict["type_json_path"], 
-                                        batch_type_json_path=training_args_dict.get("batch_type_json_path", None),
-                                        need_labels=True, need_batch=training_args_dict.get("need_batch", False),
+                                        need_labels=True,
                                         use_length_scale=training_args_dict.get("train_use_length_scale", True),
                                         bias_power=training_args_dict.get("train_bias_power", 0.4),
                                         min_length=training_args_dict.get("min_length", 50000),
@@ -284,8 +225,7 @@ def main(training_args_dict):
     val_dataset = TokensRatiosDataset(training_args_dict["val_csv_file"],
                                       training_args_dict["val_root_path"], 
                                       K_mer, tokenizer, type_json_path=training_args_dict["type_json_path"], 
-                                      batch_type_json_path=training_args_dict.get("batch_type_json_path", None),
-                                      need_labels=True, need_batch=training_args_dict.get("need_batch", False),
+                                      need_labels=True,
                                       use_length_scale=training_args_dict.get("val_use_length_scale", False),
                                       bias_power=training_args_dict.get("train_bias_power", None),
                                       min_length=training_args_dict.get("min_length", 50000),
@@ -298,8 +238,7 @@ def main(training_args_dict):
     test_dataset = TokensRatiosDataset(training_args_dict["test_csv_file"],
                                        training_args_dict["test_root_path"], 
                                        K_mer, tokenizer, type_json_path=training_args_dict["type_json_path"], 
-                                       batch_type_json_path=training_args_dict.get("batch_type_json_path", None),
-                                       need_labels=True, need_batch=training_args_dict.get("need_batch", False),
+                                       need_labels=True,
                                        use_length_scale=training_args_dict.get("test_use_length_scale", False),
                                        bias_power=training_args_dict.get("train_bias_power", None),
                                        min_length=training_args_dict.get("min_length", 50000),
@@ -319,42 +258,17 @@ def main(training_args_dict):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Initialize model
-    Classifier = scDNAmGPTForSequenceClassificationWithBatchCorrection if training_args_dict.get("need_batch", False) else scDNAmGPTForSequenceClassification
+    Classifier = scDNAmGPTForSequenceClassification
 
-    train_from_scratch = training_args_dict.get("train_from_scratch", False)
-    use_tumor_ratios = training_args_dict.get("use_tumor_ratios", False)
-
-    if train_from_scratch:
-        # Initialize model randomly
-        print("# Initialize model randomly")
-        model = Classifier(
-            tokenizer=tokenizer,
-            config=MambaConfig(**model_config_dict),  # Initialize with the same configuration
-            device=device,  # Ensure it's on the right device (GPU/CPU)
-            num_labels=train_dataset.num_labels,  # Same number of labels for consistency
-            attention_mechanism=training_args_dict["attention_mechanism"],
-            batch_correction=training_args_dict.get("need_batch", False),
-            cross_attn_every_hidden_states=training_args_dict.get("cross_attn_every_hidden_states", True),
-            lambd=training_args_dict.get("lambd", 1.0),
-            num_batches=train_dataset.num_batches,
-            just_mamba=training_args_dict.get("just_mamba", False),
-            use_tumor_ratios=use_tumor_ratios
-        )
-    else:
-        print("# Load pretrained model")
-        model = Classifier.from_pretrained(
-            tokenizer=tokenizer,
-            pretrained_model_name=training_args_dict["pretrained_model_path"],
-            device=device,
-            num_labels=train_dataset.num_labels,  # Assuming celltype is the label column
-            attention_mechanism=training_args_dict["attention_mechanism"],
-            batch_correction=training_args_dict.get("need_batch", False),
-            cross_attn_every_hidden_states=training_args_dict.get("cross_attn_every_hidden_states", True),
-            lambd=training_args_dict.get("lambd", 1.0),
-            num_batches=train_dataset.num_batches,
-            just_mamba=training_args_dict.get("just_mamba", False),
-            use_tumor_ratios=use_tumor_ratios
-        )
+    print("# Load pretrained model")
+    model = Classifier.from_pretrained(
+        tokenizer=tokenizer,
+        pretrained_model_name=training_args_dict["pretrained_model_path"],
+        device=device,
+        num_labels=train_dataset.num_labels,  # Assuming celltype is the label column
+        attention_mechanism=training_args_dict["attention_mechanism"],
+        cross_attn_every_hidden_states=training_args_dict.get("cross_attn_every_hidden_states", True)
+    )
 
     if is_main_process():
         # Print which parameters are trainable
@@ -410,7 +324,7 @@ def main(training_args_dict):
         val_dataset=val_dataset,
         data_collator=data_collator,
         training_args=training_args,
-        compute_metrics=compute_metrics if not use_tumor_ratios else compute_regression_metrics
+        compute_metrics=compute_metrics
     )
     
     if is_main_process():
