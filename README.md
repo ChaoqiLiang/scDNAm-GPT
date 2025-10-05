@@ -120,7 +120,7 @@ You can open these notebooks and follow the step-by-step instructions to reprodu
 
 Each tutorial requires example data. Please download the archives from **Google Drive** and extract them into the `tutorials/` folder:
 
-- **Download link (all datasets and models):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing
+- **Download link (all datasets and models):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing (⚠️ We are updating the data and will complete the update by October 6, 2025. Please download the data and clone the repository again after the update is complete.)
 
 | Tutorial notebook | Archive to download | Extracted folder (place under `tutorials/`) |
 |---|---|---|
@@ -155,7 +155,7 @@ This repository provides a framework for fine-tuning the **scDNAm-GPT** model on
 
 Prepare the fine-tuning dataset and pretrained weights as follows:
 
-- **Download (Google Drive):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing  
+- **Download (Google Drive):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing  (⚠️ We are updating the data and will complete the update by October 6, 2025. Please download the data and clone the repository again after the update is complete.)
 - **Archives to download:**  
   - `pretrained_model.tar.gz` – contains pretrained checkpoints  
   - `data.tar.gz` – contains the fine-tuning dataset (CSV splits and `.npz` scWGBS arrays)
