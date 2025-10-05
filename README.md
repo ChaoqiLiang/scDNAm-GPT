@@ -158,7 +158,7 @@ Prepare the fine-tuning dataset and pretrained weights as follows:
 - **Download (Google Drive):** https://drive.google.com/drive/folders/1NpjxGa_n3OIRgqbARtXMSQLDjaKXuLPX?usp=sharing
 - **Archives to download:**  
   - `pretrained_model` – contains pretrained checkpoints  
-  - `data` – contains the fine-tuning dataset (CSV splits and `.npz` scWGBS arrays)
+  - `finetuning_data_csv` and `crc_hg38` – contains the fine-tuning dataset (CSV splits and .npz scWGBS arrays aligned to hg38)
 
 
 **Quick extract commands (Linux/macOS / Git Bash):**
@@ -183,7 +183,7 @@ scDNAm-GPT/
 │       ├── human_body_and_mouse_pretrain_model/
 │       └── scDNAm-GPT_small/
 ├── tutorials/
-├── src/  # (example)
+├── src/
 └── ...
 ```
 
