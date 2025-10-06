@@ -112,7 +112,7 @@ We provide example tutorials in the `tutorials` folder to help you get started:
 - [**1_celltype_annotation.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/1_celltype_annotation.ipynb) – Demo for cell type annotation  
 - [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/2_pesudo_time.ipynb) – Demo for pseudotime analysis  
 - [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Demo for cfDNA tumor deconvolution
-- [**4_quantitative_analysis_of_CpG.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/4_quantitative_analysis_of_CpG.ipynb) – *Required data are uploading...*  
+- [**4_quantitative_analysis_of_CpG.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/4_quantitative_analysis_of_CpG.ipynb) – **Required data are uploading...**  
 
 You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. 
 
