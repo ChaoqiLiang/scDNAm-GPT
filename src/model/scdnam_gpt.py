@@ -106,7 +106,11 @@ class scDNAmGPTForSequenceClassification(scDNAmGPTLMHeadModelwithLoss):
         self.cross_attn_every_hidden_states = cross_attn_every_hidden_states
 
         # Configure attention dimensions
-        self.projection_dim = attention_mechanism.get("projection_dim", None)
+        if attention_mechanism is not None:
+            self.projection_dim = attention_mechanism.get("projection_dim", None)
+        else:
+            print("There is no attention_mechanism config")
+
         self.attention_embed_dim = (
             self.projection_dim
             if isinstance(self.projection_dim, int) and self.projection_dim > 0
@@ -115,6 +119,7 @@ class scDNAmGPTForSequenceClassification(scDNAmGPTLMHeadModelwithLoss):
         self.attention_num_heads = attention_mechanism["attention_num_heads"]
         self.dropout_rate = attention_mechanism.get("dropout_rate", 0.0)
 
+        # Optional projection layers
         if self.projection_dim:
             if cross_attn_every_hidden_states:
                 # Create a list of projection layers for each backbone layer
@@ -143,6 +148,7 @@ class scDNAmGPTForSequenceClassification(scDNAmGPTLMHeadModelwithLoss):
                 self.key_proj = nn.Linear(config.d_model, self.projection_dim, dtype=dtype).to(device)
                 self.value_proj = nn.Linear(config.d_model, self.projection_dim, dtype=dtype).to(device)
 
+
         if cross_attn_every_hidden_states:
             # Create a list of attention layers with the same length as backbone layers
             self.attention_layers = nn.ModuleList(
@@ -154,6 +160,13 @@ class scDNAmGPTForSequenceClassification(scDNAmGPTLMHeadModelwithLoss):
                     )
                     for _ in range(len(self.backbone.layers) + 1)  # Number of attention layers = number of backbone layers
                 ]
+            )
+        else:
+            # Multihead attention
+            self.attention = nn.MultiheadAttention(
+                embed_dim=self.attention_embed_dim,
+                num_heads=self.attention_num_heads,
+                batch_first=True,
             )
 
         # Regularization and classification layers
@@ -338,6 +351,149 @@ class scDNAmGPTForSequenceClassification(scDNAmGPTLMHeadModelwithLoss):
         # print("!!!!!!!!!!!!!!!!!!", logits.shape)
         return {
             "logits": logits,
+            "labels": labels,
+            "loss": loss,
+        }
+
+class scDNAmGPTForPredictscRNAseq(scDNAmGPTForSequenceClassification):
+
+    def __init__(
+        self,
+        config,
+        tokenizer,
+        num_labels: int,
+        attention_mechanism: dict = None,
+        initializer_cfg=None,
+        device=None,
+        dtype=None,
+        need_layer_hidden_states: bool = False,
+        cross_attn_every_hidden_states: bool = False,
+        **kwargs,
+    ):
+        super().__init__(
+            config,
+            tokenizer,
+            num_labels,
+            attention_mechanism=attention_mechanism,
+            initializer_cfg=initializer_cfg,
+            device=device,
+            dtype=dtype,
+            need_layer_hidden_states=need_layer_hidden_states,
+            cross_attn_every_hidden_states=cross_attn_every_hidden_states,
+            **kwargs,
+        )
+
+    def forward(
+        self,
+        unmethy_input_ids,
+        methy_input_ids,
+        methy_ratios,
+        labels=None,
+        attention_mask=None,
+        inference_params=None,
+        return_dict: Optional[bool] = None,
+        **kwargs,
+    ):
+        """Perform a forward pass of the model."""
+        # Get layer hidden states from the backbone
+        hidden_states = self.backbone(
+            unmethy_input_ids, methy_input_ids, methy_ratios,
+            inference_params=inference_params,
+            need_layer_hidden_states=(self.need_layer_hidden_states or self.cross_attn_every_hidden_states),
+            **kwargs,
+        )
+        
+        if self.need_layer_hidden_states or self.cross_attn_every_hidden_states:
+            hidden_states, layer_hidden_states = hidden_states
+        
+        # Handle attention mask
+        if attention_mask is None:
+            attention_mask = (methy_input_ids != self.pad_token_id).int()
+
+
+        if self.cross_attn_every_hidden_states:
+            last_non_padding_indices = attention_mask.sum(dim=1) - 1
+            batch_size, seq_len, embed_dim = layer_hidden_states[0].size()
+
+            # Initialize list to store attention outputs for each layer
+            norm_attn_outputs, attn_weights = [], []
+            
+            # Iterate through each layer's hidden state and apply attention separately
+            layer_hidden_states = layer_hidden_states[:-2] + layer_hidden_states[-1:]
+            for i, hidden_states in enumerate(layer_hidden_states):
+
+                # Extract the CLS token states for each sequence and apply attention
+                cls_token_states = hidden_states[torch.arange(batch_size), last_non_padding_indices]
+                key_padding_mask = ~attention_mask.bool()
+                # print(cls_token_states.shape, "cls_token_states!!!!!!!!!!!!!!!!")
+
+                if hasattr(self, "query_proj") or hasattr(self, "query_proj_layers"):
+                    q_proj = self.query_proj_layers[i](cls_token_states.unsqueeze(1))
+                    k_proj = self.key_proj_layers[i](hidden_states)
+                    v_proj = self.value_proj_layers[i](hidden_states)
+                else:
+                    q_proj = cls_token_states.unsqueeze(1)
+                    k_proj = hidden_states
+                    v_proj = hidden_states
+                
+                # Apply attention independently for this layer
+                attn_output, attn_weight = self.attention_layers[i](q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
+                # print(attn_output.shape, "attn_output!!!!!!!!!!!!!!!!")
+
+                # Store the attention output for this layer
+                norm_attn_outputs.append(self.norm(attn_output))
+                attn_weights.append(attn_weight)
+            
+            if return_dict:
+                norm_attn_outputs_for_save = torch.cat(norm_attn_outputs, dim=1)
+                
+            # Aggregate the attention outputs (e.g., sum or average across layers)
+            norm_attn_outputs = torch.sum(torch.cat(norm_attn_outputs, dim=1), dim=1)
+            attn_weights = torch.cat(attn_weights, dim=1) #.permute(1, 0, 2)
+        
+        else:
+            last_non_padding_indices = attention_mask.sum(dim=1) - 1
+            batch_size, seq_len, embed_dim = hidden_states.size()
+            cls_token_states = hidden_states[torch.arange(batch_size), last_non_padding_indices]
+            # print(cls_token_states.shape, "cls_token_states!!!!!!!!!!!!!!!!")
+
+            key_padding_mask = ~attention_mask.bool()
+
+            if hasattr(self, "query_proj"):
+                q_proj = self.query_proj(cls_token_states.unsqueeze(1))
+                k_proj = self.key_proj(hidden_states)
+                v_proj = self.value_proj(hidden_states)
+            else:
+                q_proj = cls_token_states.unsqueeze(1)
+                k_proj = hidden_states
+                v_proj = hidden_states
+
+            attn_output, attn_weights = self.attention(q_proj, k_proj, v_proj, key_padding_mask=key_padding_mask)
+            attn_output = attn_output.squeeze(1)
+
+            norm_attn_outputs = self.norm(attn_output)
+            if return_dict:
+                norm_attn_outputs_for_save = norm_attn_outputs
+        
+        # Classify using the normalized attention output
+        logits = self.classify(norm_attn_outputs)
+        
+        # Apply sigmoid to ensure the output is between 0 and 1
+        predicted_probs = logits 
+
+        # MSELoss
+        if labels is not None:
+            loss_fn = nn.MSELoss()
+            loss = loss_fn(predicted_probs, labels)
+        else:
+            loss = None
+
+        # Return the result based on return_dict flag
+        if not return_dict:
+            return (loss, logits) if loss is not None else (logits,)
+
+        return {
+            "predicted_probs": predicted_probs,
             "labels": labels,
             "loss": loss,
         }

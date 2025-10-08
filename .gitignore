@@ -3,6 +3,7 @@ output_dir/
 tmp/
 tutorials/output_dir/
 tutorials/human_esc
+tutorials/measure_CpG_effect
 data_and_model/
 pretrained_model/
 
