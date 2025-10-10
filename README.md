@@ -112,7 +112,7 @@ We provide example tutorials in the `tutorials` folder to help you get started:
 - [**1_celltype_annotation.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/1_celltype_annotation.ipynb) – Demo for cell type annotation  
 - [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/2_pesudo_time.ipynb) – Demo for pseudotime analysis  
 - [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Demo for cfDNA tumor deconvolution
-- [**4_quantitative_analysis_of_CpG.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/4_quantitative_analysis_of_CpG.ipynb) – **Required data are uploading...**  
+- [**4_scDNAm_to_expression.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/4_scDNAm_to_expression.ipynb) – Demo for single cell expression prediction from scDNAm
 
 You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. 
 
@@ -127,6 +127,7 @@ Each tutorial requires example data. Please download the archives from **Google 
 | `1_celltype_annotation.ipynb` | `human_body.tar.gz` | `tutorials/human_body/` |
 | `2_pesudo_time.ipynb` | `human_esc.tar.gz` | `tutorials/human_esc/` |
 | `3_tumor_detection_on_cfDNA.ipynb` | `tumor_detection.tar.gz` | `tutorials/tumor_detection/` |
+| `4_scDNAm_to_expression.ipynb` | `CpGs_around_MALAT1.tar.gz` | `tutorials/CpGs_around_MALAT1/` |
 
 **Quick extract commands (Linux/macOS / Git Bash):**
 ```bash
@@ -134,6 +135,7 @@ Each tutorial requires example data. Please download the archives from **Google 
 tar -xzvf human_body.tar.gz -C tutorials/
 tar -xzvf human_esc.tar.gz -C tutorials/
 tar -xzvf tumor_detection.tar.gz -C tutorials/
+tar -xzvf CpGs_around_MALAT1.tar.gz -C tutorials/
 ```
 
 After extraction, your layout should look like:
@@ -142,9 +144,11 @@ tutorials/
 ├── 1_celltype_annotation.ipynb
 ├── 2_pesudo_time.ipynb
 ├── 3_tumor_detection_on_cfDNA.ipynb
+├── 4_scDNAm_to_expression.ipynb
 ├── human_body/
 ├── human_esc/
 └── tumor_detection/
+└── CpGs_around_MALAT1/
 ```
 
 ### 4. Fine-Tuning for Colorectal Cancer Type Classification

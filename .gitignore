@@ -4,6 +4,7 @@ tmp/
 tutorials/output_dir/
 tutorials/human_esc
 tutorials/measure_CpG_effect
+tutorials/CpGs_around_MALAT1
 data_and_model/
 pretrained_model/
 
