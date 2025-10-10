@@ -53,11 +53,28 @@
   - Deconvolution cell-free DNA methylation data
 
 ## 🏆 Performance
-**Human Brain Cell Type Classification**  
-Test accuracy on 15 cell types from human prefrontal cortex:
+****Cell Type Classification****
 
+#### Test set accuracy on 35 cell types from human body:
+| Cell Type              | Accuracy | Cell Type             | Accuracy | Cell Type             | Accuracy |
+|-------------------------|-----------|-----------------------|-----------|-----------------------|-----------|
+| Endo Lymphatic          | 94.7% | Endo Vascular         | 96.7% | Epi Acinar            | 99.6% |
+| Epi Adrenal             | 99.6% | Epi Alveolar          | 97.1% | Epi Breast Basal      | 98.3% |
+| Epi Ductal              | 96.9% | Epi Endocrine         | 99.7% | Epi Enteric           | 99.6% |
+| Epi Gastric             | 99.4% | Epi Keratinous/Luminal| 97.9% | Epi Trophoblast       | 100.0% |
+| Fibro Adrenal           | 91.0% | Fibro Breast          | 97.7% | Fibro Endoneurial     | 95.0% |
+| Fibro Epineurial        | 93.2% | Fibro Gastrointestinal| 97.4% | Fibro Heart           | 96.1% |
+| Fibro Muscular          | 100.0% | Fibro Skin            | 95.2% | Glia Astrocyte        | 95.7% |
+| Glia Oligodendrocyte    | 99.1% | Hema B                | 97.5% | Hema Mast             | 93.0% |
+| Hema Myeloid            | 98.5% | Hema NK               | 82.3% | Hema Tmem             | 99.2% |
+| Hema Tnaive             | 97.6% | Mus Cardiac           | 98.9% | Mus Skeletal          | 99.7% |
+| Myofibroblast           | 90.3% | Neu Excitatory        | 99.4% | Neu Inhibitory        | 98.9% |
+| Neu Schwann             | 97.0% | Perivascular          | 95.5% |                       |        |
+
+
+#### Test set accuracy on 15 cell types from human brain:
 | Cell Type  | Accuracy | Cell Type | Accuracy |
-|------------|---------|-----------|----------|
+|------------|---------|-----------|---------|
 | L2/3-IT    | 99.1%   | L6-CT     | 97.1%   |
 | ODC        | 99.7%   | Foxp2     | 99.1%   |
 | MSN-D1     | 96.5%   | Sncg      | 88.6%   |
@@ -65,9 +82,8 @@ Test accuracy on 15 cell types from human prefrontal cortex:
 | Vip        | 96.6%   | L6b       | 95.3%   |
 | Sst        | 95.6%   | L5-IT     | 97.2%   |
 | Pvalb      | 95.3%   | Lamp5     | 94.5%   |
-| L6-IT      | 92.6%   |           |          |
+| L6-IT      | 92.6%   |           |         |
 
-*Accuracy = Percentage of correctly predicted cells per type*
 
 The high prediction accuracy across most cell types further demonstrates the strong performance of scDNAm-GPT in **single-cell methylation annotation tasks**.
 
