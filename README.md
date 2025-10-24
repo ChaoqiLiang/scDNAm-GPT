@@ -187,7 +187,7 @@ Prepare the fine-tuning dataset and pretrained weights as follows:
 tar -xzvf data_and_model.tar.gz -C .
 ```
 
-Extract both archives into the **project root** (the `scDNAm-GPT/` directory). After extraction, your layout should look like:
+Extract the archive into the **project root** (the `scDNAm-GPT/` directory). After extraction, your layout should look like:
 ```
 scDNAm-GPT/
 ├── data_and_model/
