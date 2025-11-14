@@ -87,7 +87,7 @@ def process_file(args_tuple):
                     position = positions[i] - 1 if strands[i] == '-' else positions[i]
                     seq_6mer = CpG_seqs[i]
                     
-                    if seq_6mer[4:6] == "CG":
+                    if seq_6mer[2:4] == "CG":
                         if position not in pos_index_dict:
                             pos_index_dict[position] = len(all_positions_sequences)
 
