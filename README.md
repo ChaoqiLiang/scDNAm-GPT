@@ -5,7 +5,7 @@
   </p>
   <img src="pic/scWGBS-GPT.png" width="240" style="display: block; margin: 0 auto;"/>
   <p>
-    A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing
+    A Foundation Model for Analyzing Single-Cell Whole-Genome Bisulfite Sequencing
   </p>
   <p style="max-width: 720px; margin: 0 auto; font-size: 0.95rem; color: #333;">
     This is the version we updated internally in the previous quarter. This version is more complete, as evidenced by polished writing and beautified images.
