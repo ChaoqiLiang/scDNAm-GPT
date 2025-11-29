@@ -8,7 +8,7 @@
     A Foundation Model for Analyzing Single-Cell Whole-Genome Bisulfite Sequencing
   </p>
   <p style="max-width: 720px; margin: 0 auto; font-size: 0.95rem; color: #333;">
-    This is the version we updated internally in the previous quarter. This version is more complete, as evidenced by polished writing and beautified images.
+    The new version of paper is updating! This is the version we updated internally in the previous quarter. This version is more complete, as evidenced by polished writing and beautified images.
     The title of the manuscript has been changed, and the model name has been updated from <strong>scWGBS-GPT</strong> to <strong>scDNAm-GPT</strong>.
   </p>
   <p>
