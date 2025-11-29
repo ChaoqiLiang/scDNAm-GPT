@@ -8,11 +8,11 @@
     A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing
   </p>
   <p style="max-width: 720px; margin: 0 auto; font-size: 0.95rem; color: #333;">
-    We have organized a comprehensive benchmark and updated all the main figures 1, 2, 3, 4, and 5 in this revision.
+    This is the version we updated internally in the previous quarter. This version is more complete, as evidenced by polished writing and beautified images.
     The title of the manuscript has been changed, and the model name has been updated from <strong>scWGBS-GPT</strong> to <strong>scDNAm-GPT</strong>.
   </p>
   <p>
-    📄 <a href="https://www.biorxiv.org/content/10.1101/2025.02.19.638959v2" target="_blank">
+    📄 <a href="https://www.biorxiv.org/content/10.1101/2025.02.19.638959v3" target="_blank">
       Read our paper on bioRxiv
     </a>
   </p>
