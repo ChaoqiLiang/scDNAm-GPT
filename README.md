@@ -9,7 +9,7 @@
   </p>
   <p style="max-width: 720px; margin: 0 auto; font-size: 0.95rem; color: #333;">
     The new version of paper is updating! This is the version we updated internally in the previous quarter. This version is more complete, as evidenced by polished writing and beautified images.
-    The title of the manuscript has been changed, and the model name has been updated from <strong>scWGBS-GPT</strong> to <strong>scDNAm-GPT</strong>.
+    The title of the manuscript has been changed, and the model name has been updated from <strong>scWGBS-GPT</strong> to <strong>scDNAm-GPT</strong>. [2025/11/29]
   </p>
   <p>
     📄 <a href="https://www.biorxiv.org/content/10.1101/2025.02.19.638959v3" target="_blank">
