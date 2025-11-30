@@ -368,13 +368,12 @@ Please cite our paper if you use this code in your work:
 ```
 @article {Liang2025.02.19.638959,
 	author = {Liang, Chaoqi and Ye, Peng and Yan, Hongliang and Zheng, Peng and Sun, Jianle and Wang, Yanni and Li, Yu and Ren, Yuchen and Jiang, Yuanpei and Wei, Ran and Xiang, Junjia and Zhang, Sizhe and Jiang, Linle and Bai, Weiqiang and Ma, Xinzhu and Chen, Tao and Zuo, Wangmeng and Bai, Lei and Ouyang, Wanli and Li, Jia},
-	title = {scDNAm-GPT: A Foundation Model for Capturing Long-Range CpG Dependencies in Single-Cell Whole-Genome Bisulfite Sequencing to Enhance Epigenetic Analysis},
+	title = {scDNAm-GPT Captures Genome-wide CpG Dependencies in Single-cell DNA methylomes to Revolutionize Epigenetic Analysis},
 	elocation-id = {2025.02.19.638959},
 	year = {2025},
 	doi = {10.1101/2025.02.19.638959},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2025/07/17/2025.02.19.638959},
-	eprint = {https://www.biorxiv.org/content/early/2025/07/17/2025.02.19.638959.full.pdf},
+	URL = {https://www.biorxiv.org/content/early/2025/11/28/2025.02.19.638959},
+	eprint = {https://www.biorxiv.org/content/early/2025/11/28/2025.02.19.638959.full.pdf},
 	journal = {bioRxiv}
 }
 ```
