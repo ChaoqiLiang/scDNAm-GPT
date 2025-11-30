@@ -13,7 +13,7 @@
   </p>
   <p>
     📄 <a href="https://www.biorxiv.org/content/10.1101/2025.02.19.638959v3" target="_blank">
-      Read our paper on bioRxiv
+      Read our new version manuscript on bioRxiv
     </a>
   </p>
   <div align="center" style="margin: 1.5rem 0;">
